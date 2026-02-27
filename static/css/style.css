@@ -12,6 +12,24 @@ body {
     background-color: #f4f6f8;
     color: #1f2937;
     line-height: 1.6;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Make main expand and push footer down */
+main {
+    flex: 1;
+}
+
+
+h1, h2, h3 {
+    margin-top: 0;
+}
+
+section {
+    margin-bottom: 40px;
 }
 
 .container {
@@ -19,137 +37,258 @@ body {
     margin: 0 auto;
     padding: 20px 30px;
 }
+.center-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:800px;
+    min-height: 70vh;   
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 600px;
+    background:  #f9fafb;
+    padding: 50px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    text-align: left;
+}
+
+.auth-card h2{
+    text-align: center;
+}
+.form-actions {
+    text-align: center;
+    margin-top: 10px;
+}
+/* ==============================
+   ACTION BAR
+============================== */
+.action-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
 
 /* ==============================
-   HEADER & NAV
-   ============================== */
-header {
-    background-color: #1f2937;
-    color: white;
-    padding: 15px 30px;
+   HEADER
+============================== */
+header.site-header {
+    background-color: #1f2937; /* dark/navy header */
+    color: #fff;
+    padding: 15px 0;
 }
 
-header h1 {
-    margin: 0;
-    display: inline-block;
-    font-size: 1.6rem;
+header.site-header .header-container {
+    display: flex;
+    justify-content: space-between; /* logo left, nav right */
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-header .logo {
-    color: white;
-    text-decoration: none;
+header.site-header h1 a.logo {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
+    text-decoration: none; /* remove underline */
 }
 
-nav {
-    float: right;
-    margin-top: 8px;
+header.site-header nav {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-nav a {
-    color: white;
-    text-decoration: none;
-    margin-left: 20px;
-    font-weight: bold;
+header.site-header nav a {
+    color: #e5e7eb; /* light gray text */
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none; /* remove underline */
+    transition: color 0.2s ease;
 }
 
-nav a:hover {
-    text-decoration: underline;
+header.site-header nav a:hover {
+    color: #fff; /* classic hover: just lighten text */
+}
+
+/* Responsive header */
+@media (max-width: 768px) {
+    header.site-header .header-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    header.site-header nav {
+        justify-content: center;
+        gap: 12px;
+    }
 }
 
 /* ==============================
    FOOTER
-   ============================== */
-footer {
+============================== */
+footer.site-footer {
+    background-color: #1f2937; /* same as header */
+    color: #e5e7eb;
+    padding: 15px 0;
     text-align: center;
-    padding: 15px;
-    background: #e5e7eb;
-    margin-top: 40px;
-    font-size: 0.9em;
-    color: #1f2937;
+    font-size: 0.9rem;
+    margin-top: auto;
+    border-top: 2px solid #2563eb; /* subtle accent line for style */
 }
 
+footer.site-footer p {
+    margin: 0;
+    font-weight: 500;
+}
 /* ==============================
-   BUTTONS
-   ============================== */
+   BUTTON SYSTEM
+============================== */
 .btn {
     display: inline-block;
-    padding: 10px 18px;
-    background-color: #2563eb;
-    color: white;
-    border-radius: 4px;
+    padding: 10px 16px;
+    border-radius: 6px;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 0.9rem;
     border: none;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.btn:hover {
+.btn-primary {
+    background-color: #2563eb;
+    color: white;
+}
+
+.btn-primary:hover {
     background-color: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background-color: #16a34a;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #15803d;
 }
 
 .btn-danger {
     background-color: #dc2626;
+    color: white;
 }
 
 .btn-danger:hover {
     background-color: #b91c1c;
 }
 
+.btn-outline {
+    background: transparent;
+    border: 2px solid #989899;
+    color: #232b2b;
+}
+
+.btn-outline:hover {
+    background: #f3f4f6;
+}
+
 /* ==============================
-   TABLES
-   ============================== */
+   TABLE SYSTEM (FINAL FIX)
+============================== */
 table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    margin-top: 20px;
-    border-radius: 6px;
+    margin: 20px 0;
+    border-radius: 8px;
     overflow: hidden;
+    font-size: 1.05rem;
+    border: 1px solid #e5e7eb; /* outer border */
 }
 
+/* Header */
+table thead tr {
+    background-color: #1f2937;
+}
+
+table thead tr th {
+    color: #ffffff !important;
+    font-weight: 600;
+    border-right: 1px solid #e5e7eb; /* vertical lines in header */
+}
+
+/* Remove right border from last header cell */
+table thead tr th:last-child {
+    border-right: none;
+}
+
+/* Cells */
 table th,
 table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #e5e7eb;
-    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb; /* horizontal lines */
+    border-right: 1px solid #e5e7eb;  /* vertical lines */
 }
 
-table th {
-    background-color: #2563eb;
-    color: white;
-    font-size: 0.9rem;
+/* Remove right border from last column */
+table th:last-child,
+table td:last-child {
+    border-right: none;
 }
 
+/* Hover */
+table tbody tr:hover {
+    background-color: #f9fafb;
+}
 /* ==============================
-   FORMS
-   ============================== */
+   FORM SYSTEM
+============================== */
 form {
-    max-width: 650px;
+    max-width: 100%;
     background: white;
-    padding: 25px;
-    border-radius: 6px;
-    margin-top: 20px;
+    padding: 30px;
+    border-radius: 8px;
+    margin: 40px auto;  /* <-- THIS CENTERS */
     border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.form-group {
+    margin-bottom: 18px;
 }
 
 label {
-    font-weight: bold;
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
 }
 
 input,
 select,
 textarea {
     width: 100%;
-    margin-top: 8px;
-    margin-bottom: 15px;
-    padding: 9px;
+    padding: 10px 12px;
     border: 1px solid #d1d5db;
-    border-radius: 4px;
-    font-size: 0.95rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
-textarea {
-    min-height: 90px;
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
 }
 
 /* ==============================
@@ -252,64 +391,30 @@ ul li {
 
 /* ==============================
    ERROR PAGES
-   ============================== */
+============================== */
 .error-box {
     text-align: center;
-    margin-top: 80px;
+    margin: 80px auto;
+    max-width: 500px;
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
 .error-box h1 {
     font-size: 72px;
+    margin-bottom: 10px;
     color: #dc2626;
 }
 
-/* ==============================
-   OTP / AUTH FORMS
-   ============================== */
-.otp-form {
-    max-width: 420px;
-    margin: 40px auto;
-    padding: 25px;
-    background: #fff;
-    border-radius: 6px;
-    box-shadow: 0px 0px 8px rgba(0,0,0,0.1);
+.error-box p {
+    margin-bottom: 20px;
+    color: #6b7280;
 }
 
-.otp-form button {
-    width: 100%;
-    padding: 10px;
-    font-weight: bold;
-}
 
-/* ==============================
-   DASHBOARD LINKS
-   ============================== */
-.dashboard-links a {
-    display: inline-block;
-    margin-right: 12px;
-    margin-bottom: 12px;
-}
-
-/* ==============================
-   RESPONSIVE
-   ============================== */
-@media (max-width: 768px) {
-    nav {
-        float: none;
-        text-align: center;
-        margin-top: 12px;
-    }
-
-    header h1 {
-        display: block;
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    .container {
-        padding: 15px;
-    }
-}
 
 /* ==============================
    INFO PAGE
@@ -418,44 +523,96 @@ ul li {
    STATS SECTION
 ================================= */
 .stats-section {
-    margin-top: 40px;
+    margin: 50px 0;
+    padding: 0 20px;
 }
 
 .stats-section h3 {
     text-align: center;
-    margin-bottom: 25px;
+    margin-bottom: 35px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #1f2937;
 }
 
+/* Grid Layout */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 25px;
 }
 
+/* Individual Card */
 .stat-card {
     background: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
+    padding: 25px 20px;
+    border-radius: 12px;
     border: 1px solid #e5e7eb;
     text-align: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-height: 140px;       /* ensures cards are taller even if content is small */
+    font-size: 1.05rem;      /* slightly larger font for better readability */
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
+/* Hover Animation */
 .stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
 }
 
+/* Card Heading */
 .stat-card h4 {
-    margin-bottom: 10px;
+    font-size: 0.95rem;
+    color: #505e7c;
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+/* Main Value */
+
+.stat-card p {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+/* Small Text */
+.stat-card small {
+    display: block;
+    margin-top: 10px;
     font-size: 1rem;
     color: #6b7280;
 }
 
-.stat-card p {
-    font-size: 1.8rem;
-    font-weight: bold;
+/* ===============================
+   IMPACT SECTION
+================================= */
+
+.impact-section {
+    margin: 60px 0;
+    padding: 30px 20px;
+    background: #f9fafb;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.impact-section h3 {
+    margin-bottom: 15px;
+    font-size: 1.4rem;
     color: #1f2937;
+}
+
+.impact-section p {
+    max-width: 700px;
+    margin: auto;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #374151;
 }
 
 /* ===============================
@@ -581,4 +738,351 @@ ul li {
 .info-page section h3 {
     margin-bottom: 15px;
     color: #1f2937;
+}
+
+.star-rating {
+    font-size: 35px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.star {
+    color: #ccc;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.star.hover,
+.star.selected {
+    color: gold;
+    transform: scale(1.2);
+}
+
+.chart-card {
+    background: #ffffff;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.chart-card canvas {
+    width: 100% !important;
+    height: 300px !important;
+}
+
+.warning-box {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    padding: 14px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+/* =========================================
+   DASHBOARD FILTER BAR IMPROVEMENT
+========================================= */
+/* =========================
+   DASHBOARD LAYOUT
+========================= */
+
+.dashboard-wrapper {
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.action-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    margin-bottom: 25px;
+}
+
+.filter-wrapper {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 20px;
+}
+
+/* Search on top */
+.filter-search {
+    margin-bottom: 12px;
+}
+
+.filter-search input {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
+/* Filters row */
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Smaller dropdowns */
+.filter-row select,
+.filter-row input[type="date"] {
+    width: auto;
+    min-width: 140px;
+    padding: 6px 8px;
+    font-size: 0.95rem;
+}
+
+/* Date group styling */
+.date-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f3f4f6;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+}
+
+.date-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Reset button */
+.filter-row button {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+
+
+.profile-table {
+    width: 100%;
+    max-width: 850px;
+    margin: 30px auto;
+    border-collapse: collapse;
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.profile-table th,
+.profile-table td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-table th {
+    background-color: #3566ce;
+    font-weight: 600;
+    color: #ffffff;
+    width: 250px;
+}
+
+.profile-table td {
+    color: #374151;
+    font-weight: 500;
+    width:400px;
+}
+
+.profile-table tr:last-child td {
+    border-bottom: none;
+}
+
+.profile-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 25px;
+    margin-bottom: 40px;
+}
+/* Users table styling */
+#users_table {
+    width: 90%;
+    margin: 0 auto 25px;
+    border-collapse: collapse;
+    background: #fff;
+    border: 1px solid #e5e7eb;  /* outer border */
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#users_table th, #users_table td {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 1.05rem;
+    border-bottom: 1px solid #e5e7eb;  /* horizontal lines */
+    border-right: 1px solid #e5e7eb;   /* vertical lines */
+}
+
+/* Remove extra right border for last column */
+#users_table th:last-child,
+#users_table td:last-child {
+    border-right: none;
+}
+
+/* Header styling */
+#users_table thead {
+    background: #1f2937;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Row hover effect */
+#users_table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+.dashboard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* ===============================
+   ISSUE DETAIL PAGE UPGRADE
+================================= */
+
+.issue-detail-wrapper {
+    width: 900px;
+    margin: 30px auto;
+}
+
+.issue-detail-card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    margin-bottom: 25px;
+}
+
+.issue-detail-card h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #1f2937;
+}
+
+.issue-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+}
+
+.issue-meta p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.image-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.image-card {
+    text-align: center;
+}
+
+.issue-thumb {
+    width: 200px;
+    border: 1px solid #ccc;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.download-btn {
+    display: block;
+    margin-top: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.image-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+}
+
+.image-modal img {
+    max-width: 90%;
+    max-height: 90%;
+    cursor: grab;
+    transition: transform 0.05s ease-out;
+}
+
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 28px;
+    color: white;
+    cursor: pointer;
+}
+
+
+.similar-issues-box {
+    background: #f8f9fa;
+    padding: 18px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 1px solid #e5e7eb;
+}
+
+.similar-note {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 12px;
+}
+
+.similar-issues-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.similar-issues-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.95rem;
+}
+
+.similar-issues-list li:last-child {
+    border-bottom: none;
+}
+
+.status {
+    color: #6b7280;
+    margin-left: 6px;
+}
+
+.support-count {
+    margin-left: 10px;
+    font-weight: 600;
+    color: #2563eb;
 }

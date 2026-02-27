@@ -32,6 +32,19 @@ def home():
         WHERE current_status = 'Reported'
     """)
     pending_issues = cursor.fetchone()["total"]
+    # Average Rating (only closed & rated issues)
+    cursor.execute("""
+        SELECT 
+            ROUND(AVG(rating), 2) AS avg_rating,
+            COUNT(rating) AS total_rated
+        FROM Issues
+        WHERE rating IS NOT NULL
+    """)
+    rating_data = cursor.fetchone()
+
+    avg_rating = rating_data["avg_rating"] if rating_data["avg_rating"] else 0
+    total_rated = rating_data["total_rated"]
+    
 
     cursor.close()
     conn.close()
@@ -45,12 +58,14 @@ def home():
         active_rate = 0
 
     return render_template(
-        "info.html",
-        total_issues=total_issues,
-        resolved_issues=resolved_issues,
-        in_progress_issues=in_progress_issues,
-        pending_issues=pending_issues,
-        resolution_rate=resolution_rate,
-        active_rate=active_rate
-    )
+    "info.html",
+    total_issues=total_issues,
+    resolved_issues=resolved_issues,
+    in_progress_issues=in_progress_issues,
+    pending_issues=pending_issues,
+    resolution_rate=resolution_rate,
+    active_rate=active_rate,
+    avg_rating=avg_rating,
+    total_rated=total_rated
+)
 

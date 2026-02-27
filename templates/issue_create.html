@@ -1,32 +1,73 @@
-<!-- templates/issue_create.html -->
 {% extends "base.html" %}
 {% block content %}
 
-<h2>Report Public Issue</h2>
+<div class="center-page">
+    <div class="auth-card">
+        <h2>Report Public Issue</h2>
 
-<form method="POST" enctype="multipart/form-data">
+        {% if similar_issues %}
+        <div class="similar-issues-box">
+            <h4>📍 Recent Issues In Your Area</h4>
+            <p class="similar-note">
+                Someone may have already reported a similar issue.
+                You can support existing issues from the Dashboard.
+            </p>
 
-    <label>Title</label><br>
-    <input type="text" name="title" required><br><br>
+            <ul class="similar-issues-list">
+                {% for issue in similar_issues %}
+                <li>
+                    <strong> - {{ issue.title }}</strong>
+                    <span class="status">({{ issue.current_status }})</span>
+                    <span class="support-count">👍 {{ issue.support_count }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
 
-    <label>Description</label><br>
-    <textarea name="description" required></textarea><br><br>
+        <form method="POST" enctype="multipart/form-data">
 
-    <label>Category</label><br>
-    <select name="category" required>
-        <option value="">Select Category</option>
-        <option value="Road">Road</option>
-        <option value="Garbage">Garbage</option>
-        <option value="Water">Water</option>
-        <option value="Electricity">Electricity</option>
-        <option value="Health">Health</option>
-        <option value="Other">Other</option>
-    </select><br><br>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" name="title" required>
+            </div>
 
-    <label>Upload Images (optional)</label><br>
-    <input type="file" name="images" multiple><br><br>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="description" required></textarea>
+            </div>
 
-    <button type="submit">Submit Issue</button>
-</form>
+            <div class="form-group">
+                <label>Category</label>
+                <select name="category" required>
+                    <option value="">Select Category</option>
+                    <option value="Road">Road</option>
+                    <option value="Garbage">Garbage</option>
+                    <option value="Water">Water</option>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Health">Health</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Upload Images (optional)</label>
+                <input type="file" name="images" multiple>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    Submit Issue
+                </button>
+            </div>
+
+        </form>
+
+        <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-primary">
+            ⬅ Back to Dashboard
+        </a>
+
+    </div>
+</div>
 
 {% endblock %}

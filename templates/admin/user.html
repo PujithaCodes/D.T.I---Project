@@ -6,15 +6,15 @@
 
 <!-- ================= CREATE USER BUTTON ================= -->
 <div style="margin-bottom:15px;">
-    <a href="{{ url_for('admin.create_user') }}" class="btn" style="background:#28a745; color:white; padding:6px 12px; border-radius:4px;">
+    <a href="{{ url_for('admin.create_user') }}" class="btn btn-success">
         ➕ Create New User
     </a>
 
-    <a href="{{ url_for('admin.view_users') }}" class="btn">
+    <a href="{{ url_for('admin.view_users') }}" class="btn btn-primary">
         View All Users
     </a>
     
-    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn">
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-primary">
         ⬅ Back to Dashboard
     </a>
 </div>
@@ -28,34 +28,45 @@
 {% endif %}
 
 <!-- ================= FILTER BAR ================= -->
-<div style="margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;">
-    {% if role == 'super_admin' %}
-    <select id="state_filter">
-        <option value="">--Select State--</option>
-        {% for s in states %}
-            <option value="{{ s.state_id }}">{{ s.name }}</option>
-        {% endfor %}
-    </select>
-    {% endif %}
+<div class="filter-wrapper">
 
-    {% if role in ['super_admin','state_admin'] %}
-    <select id="city_filter">
-        <option value="">--Select City--</option>
-    </select>
-    {% endif %}
+    <!-- 🔎 Search on Top -->
+    <div class="filter-search">
+        <input type="text"
+               id="search_input"
+               placeholder="Search by name or mobile">
+    </div>
 
-    {% if role in ['super_admin','state_admin','municipal_admin'] %}
-    <select id="ward_filter">
-        <option value="">--Select Ward--</option>
-    </select>
-    {% endif %}
+    <!-- 🎛 Filters Row -->
+    <div class="filter-row">
 
-    <input type="text" id="search_input" placeholder="Search by name or mobile" style="min-width:220px;">
+        {% if role == 'super_admin' %}
+        <select id="state_filter">
+            <option value="">State</option>
+            {% for s in states %}
+                <option value="{{ s.state_id }}">{{ s.name }}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+
+        {% if role in ['super_admin','state_admin'] %}
+        <select id="city_filter">
+            <option value="">City</option>
+        </select>
+        {% endif %}
+
+        {% if role in ['super_admin','state_admin','municipal_admin'] %}
+        <select id="ward_filter">
+            <option value="">Ward</option>
+        </select>
+        {% endif %}
+
+    </div>
 </div>
 
 <!-- ================= USERS TABLE ================= -->
-<table border="1" cellpadding="6" cellspacing="0" style="width:100%; border-collapse:collapse;">
-    <thead style="background:#f0f0f0;">
+<table >
+    <thead >
         <tr>
             <th>Name</th>
             <th>Mobile</th>

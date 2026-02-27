@@ -3,16 +3,30 @@
 {% block title %}Request OTP{% endblock %}
 
 {% block content %}
-<h2>Request OTP</h2>
+<div class="center-page">
+    <div class="auth-card">
+        <h2>Request OTP</h2>
 
-<form method="POST" action="{{ url_for('otp_bp.request_otp') }}">
-    <label>Mobile Number:</label>
-    <input type="text" name="mobile" placeholder="Enter your mobile" required><br><br>
+        <form method="POST" action="{{ url_for('otp_bp.request_otp') }}">
+            <div class="form-group">
+                <label>Mobile Number:</label>
+                <input 
+                    type="tel"
+                    name="mobile"
+                    placeholder="Enter mobile number"
+                    maxlength="10"
+                    inputmode="numeric"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Send OTP</button>
+            </div>
+        </form>
 
-    <button type="submit">Send OTP</button>
-</form>
-
-<p>
-    Already have an account? <a href="{{ url_for('otp_bp.verify_otp') }}">Verify OTP</a>
-</p>
+        <p>
+            Already have an account? <a href="{{ url_for('otp_bp.verify_otp') }}" class="btn btn-outline">Verify OTP</a>
+        </p>
+    </div>
+</div>
 {% endblock %}

@@ -3,30 +3,60 @@
 {% block title %}Citizen Signup{% endblock %}
 
 {% block content %}
-<h2>Signup</h2>
 
-<form method="POST" action="{{ url_for('auth.signup') }}">
-    <label>Name:</label>
-    <input type="text" name="name" placeholder="Enter your name" required><br><br>
 
-    <label>Mobile:</label>
-    <input type="text" name="mobile" placeholder="Enter mobile number" required><br><br>
+<div class="center-page">
 
-    <label>Password:</label>
-    <input type="password" name="password" placeholder="Choose a password" required><br><br>
+    <div class="auth-card">
 
-    <label>
-        Assisted Signup (for elderly/disabled)?
-        <input type="checkbox" name="assisted_signup">
-    </label>
+        <h2>Signup</h2>
 
-    <br><br>
+        <form method="POST" action="{{ url_for('auth.signup') }}">
 
-    <button type="submit">Sign Up</button>
-</form>
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" name="name" placeholder="Enter your name" required>
+            </div>
 
-<p>
-    Already have an account?<a href="{{ url_for('auth.login') }}">Login</a>
-</p>
-<p>After signup, you will receive an OTP to verify your mobile.</p>
+            <div class="form-group">
+                <label>Mobile:</label>
+                <input 
+                    type="tel"
+                    name="mobile"
+                    placeholder="Enter mobile number"
+                    maxlength="10"
+                    inputmode="numeric"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label>Password:</label>
+                <input type="password" name="password" placeholder="Choose a password" required>
+            </div>
+
+            <div class="form-group checkbox-label">
+                <input type="checkbox" name="assisted_signup">
+                <label>Assisted Signup (for elderly/disabled)?</label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+            </div>
+        </form>
+
+        <p class="auth-footer">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}" class="btn btn-outline">Login</a>
+        </p>
+
+        <p class="auth-note">
+            After signup, you will receive an OTP to verify your mobile.
+        </p>
+
+    </div>
+
+</div>
+
+
 {% endblock %}

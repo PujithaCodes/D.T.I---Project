@@ -2,56 +2,95 @@
 {% block title %}Update Profile{% endblock %}
 
 {% block content %}
-<h1>Update Profile</h1>
+<div class="center-page">
+    <div class="auth-card">
 
-<form method="POST">
-    <label>Name:</label>
-    <input type="text" name="name" value="{{ user.name }}" required><br><br>
+        <h1>Update Profile</h1>
 
-    <label>Email:</label>
-    <input type="email" name="email" value="{{ user.email }}"><br><br>
 
-    <label>Mobile:</label>
-    <input type="text" name="mobile" value="{{ user.mobile }}" required><br><br>
+        <form method="POST">
 
-    <!-- STATE -->
-    <label>State:</label>
-    <select id="state_id" name="state_id">
-        <option value="">Select State</option>
-        {% for s in states %}
-            <option value="{{ s.state_id }}" {% if s.state_id == user.state_id %}selected{% endif %}>
-                {{ s.name }}
-            </option>
-        {% endfor %}
-    </select><br><br>
+            <div class="form-group">
+            <!-- BASIC INFO -->
+                <label>Name:</label>
+                <input type="text" name="name" value="{{ user.name }}" required>
+            </div>
 
-    <!-- CITY -->
-    <label>City:</label>
-    <select id="city_id" name="city_id" data-selected="{{ user.city_id }}">
-        <option value="">Select City</option>
-    </select><br><br>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" name="email" value="{{ user.email }}">
+            </div>
 
-    <!-- WARD -->
-    <label>Ward:</label>
-    <select id="ward_id" name="ward_id" data-selected="{{ user.ward_id }}">
-        <option value="">Select Ward</option>
-    </select><br><br>
+            <div class="form-group">
+                <label>Mobile:</label>
+                <input type="text" value="{{ user.mobile }}" readonly>
+            </div>
 
-    <button type="submit">Update</button>
-</form>
+            <!-- ================= LOCATION SECTION ================= -->
 
-<a href="{{ url_for('profile.profile_page') }}">Back to Profile</a>
+            <!-- STATE (state_admin, municipal_admin, citizen) -->
+            {% if user.role in ['state_admin', 'municipal_admin', 'citizen'] %}
+            <div class="form-group">
+                <label>State:</label>
+                <select id="state_id" name="state_id">
+                    <option value="">Select State</option>
+                    {% for s in states %}
+                        <option value="{{ s.state_id }}"
+                            {% if s.state_id == user.state_id %}selected{% endif %}>
+                            {{ s.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
 
+
+            <!-- CITY (municipal_admin, citizen) -->
+            {% if user.role in ['municipal_admin', 'citizen'] %}
+            <div class="form-group">
+                <label>City:</label>
+                <select id="city_id" name="city_id"
+                        data-selected="{{ user.city_id }}">
+                    <option value="">Select City</option>
+                </select>
+            </div>
+            {% endif %}
+
+
+            <!-- WARD (citizen only) -->
+            {% if user.role == 'citizen' %}
+            <div class="form-group">
+                <label>Ward:</label>
+                <select id="ward_id" name="ward_id"
+                        data-selected="{{ user.ward_id }}">
+                    <option value="">Select Ward</option>
+                </select>
+            </div>
+            {% endif %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+
+        <a href="{{ url_for('profile.profile_page') }}" class="btn btn-primary">Back to Profile</a>
+    </div>
+</div>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+
     const state = document.getElementById("state_id");
     const city  = document.getElementById("city_id");
     const ward  = document.getElementById("ward_id");
 
+    // If no state field exists (super_admin), exit safely
+    if (!state) return;
+
     function loadCities(selectedState, selectedCity=null) {
-        if (!selectedState) return;
+        if (!selectedState || !city) return;
+
         city.innerHTML = "<option value=''>Select City</option>";
-        ward.innerHTML = "<option value=''>Select Ward</option>";
+        if (ward) ward.innerHTML = "<option value=''>Select Ward</option>";
 
         fetch(`/profile/api/cities?state_id=${selectedState}`)
             .then(r => r.json())
@@ -59,13 +98,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 d.cities.forEach(c => {
                     city.innerHTML += `<option value="${c.city_id}">${c.name}</option>`;
                 });
-                if (selectedCity) city.value = selectedCity;
-                if (selectedCity) loadWards(selectedCity, ward.getAttribute("data-selected"));
+
+                if (selectedCity) {
+                    city.value = selectedCity;
+                    if (ward) {
+                        loadWards(selectedCity, ward.getAttribute("data-selected"));
+                    }
+                }
             });
     }
 
     function loadWards(selectedCity, selectedWard=null) {
-        if (!selectedCity) return;
+        if (!selectedCity || !ward) return;
+
         ward.innerHTML = "<option value=''>Select Ward</option>";
 
         fetch(`/profile/api/wards?city_id=${selectedCity}`)
@@ -74,23 +119,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 d.wards.forEach(w => {
                     ward.innerHTML += `<option value="${w.ward_id}">${w.name}</option>`;
                 });
+
                 if (selectedWard) ward.value = selectedWard;
             });
     }
 
-    // ---------- INITIAL BOOTSTRAP ----------
+    // Initial Load
     if (state.value) {
-        loadCities(state.value, city.getAttribute("data-selected"));
+        loadCities(state.value, city?.getAttribute("data-selected"));
     }
 
-    // ---------- EVENTS ----------
     state.addEventListener("change", () => {
         loadCities(state.value);
     });
 
-    city.addEventListener("change", () => {
-        loadWards(city.value);
-    });
+    if (city) {
+        city.addEventListener("change", () => {
+            loadWards(city.value);
+        });
+    }
 });
 </script>
 

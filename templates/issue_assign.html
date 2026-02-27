@@ -2,28 +2,34 @@
 {% extends "base.html" %}
 {% block content %}
 
+<div class="center-page">
+<div class = "auth-card">
 <h2>Assign Issue</h2>
 
 <p><strong>Issue:</strong> {{ issue.title }}</p>
 
 <form method="POST">
 
-    <label>Assign Department</label><br>
-    <select name="department_id" required>
+    <label for="department">Assign to Department</label>
+    <select name="department_id" id="department" required>
         {% for dept in departments %}
-            <option value="{{ dept.department_id }}">
-                {{ dept.name }}
-            </option>
+        <option value="{{ dept.department_id }}">{{ dept.name }}</option>
         {% endfor %}
-    </select><br><br>
+    </select>
 
-    <label>Deadline</label><br>
-    <input type="datetime-local" name="deadline" required><br><br>
+    <label for="deadline">Deadline</label>
+    <input type="datetime-local" name="deadline" id="deadline" 
+        min="{{ min_deadline }}" required>
 
-    <label>Remarks</label><br>
-    <textarea name="remarks" required></textarea><br><br>
+    <label for="remarks">Remarks</label>
+    <textarea name="remarks" id="remarks" rows="3"></textarea>
 
-    <button type="submit">Assign Issue</button>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Assign Issue</button>
+    </div>
 </form>
+        <a href="{{ url_for('issues.issue_detail', issue_id=issue.issue_id) }}" class="btn btn-primary">⬅ Back to Issue</a>
 
+</div>
+</div>
 {% endblock %}

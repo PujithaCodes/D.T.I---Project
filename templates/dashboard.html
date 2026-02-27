@@ -3,309 +3,470 @@
 
 {% block content %}
 
-<h2>{{ role|capitalize }} Dashboard</h2>
+<div class="dashboard-wrapper">
 
-<!-- ================= ACTION BAR ================= -->
-<div style="margin-bottom:15px;">
-    {% if role in ['citizen','facilitator'] %}
-        <a href="{{ url_for('issues.create_issue') }}" class="btn">➕ Report Issue</a>
+    <!-- ================= HEADER ================= -->
+    <div class="dashboard-header">
+        <h2>{{ role|capitalize }} Dashboard</h2>
+
+        <div class="action-bar">
+            {% if role in ['citizen','facilitator'] %}
+                <a href="{{ url_for('issues.create_issue') }}" class="btn btn-primary">
+                    ➕ Report Issue
+                </a>
+            {% endif %}
+
+            <a href="{{ url_for('dashboard.issues_dashboard') }}" class="btn btn-primary">
+                📋 View All Issues
+            </a>
+
+            {% if role in ['super_admin','state_admin','municipal_admin'] %}
+                <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-primary">
+                    ⬅ Back to Dashboard
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <!-- ================= STATS ================= -->
+    <div class="card">
+        <h3>Statistics Overview</h3>
+
+        <div class="stats-grid">
+            {% for k, v in stats.items() %}
+            <div class="stat-card">
+                <div class="stat-label">{{ k }}</div>
+                <div class="stat-value">{{ v }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <!-- ================= CHART ================= -->
+    <div class="card chart-card">
+        <canvas id="issuesChart"></canvas>
+    </div>
+
+
+    <!-- ================= PROFILE WARNING ================= -->
+    {% if (not profile_location or not profile_location.state_id or not profile_location.city_id) and role != 'super_admin' %}
+    <div class="warning-box">
+        ⚠️ Your profile location is incomplete.
+        <a href="{{ url_for('profile.update_profile') }}" class="btn btn-outline">
+            Complete Profile
+        </a>
+    </div>
     {% endif %}
 
-    <a href="{{ url_for('dashboard.issues_dashboard') }}" class="btn" style="margin-left:10px;">
-        📋 View All Issues
-    </a>
 
-    {% if role in ['super_admin','state_admin','municipal_admin'] %}
-        <a href="{{ url_for('admin.admin_dashboard') }}" class="btn">⬅ Back to Dashboard</a>
-    {% endif %}
+    <!-- ================= FILTER SECTION ================= -->
+    <div class="card filter-wrapper">
+
+        <div class="filter-search">
+            <input type="text" id="search_input"
+                   placeholder="Search by title">
+        </div>
+
+        <div class="filter-row">
+
+            {% if role == 'super_admin' %}
+            <select id="state_filter">
+                <option value="">State</option>
+                {% for s in states %}
+                    <option value="{{ s.state_id }}">{{ s.name }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
+            {% if role in ['super_admin','state_admin'] %}
+            <select id="city_filter">
+                <option value="">City</option>
+            </select>
+            {% endif %}
+
+            {% if role in ['super_admin','state_admin','municipal_admin'] %}
+            <select id="ward_filter">
+                <option value="">Ward</option>
+            </select>
+            {% endif %}
+
+            {% if role in ['super_admin','state_admin','municipal_admin','department_admin','Facilitator'] %}
+            <select id="department_filter">
+                <option value="">Department</option>
+            </select>
+            {% endif %}
+
+            <select id="status_filter">
+                <option value="">Status</option>
+                <option>Reported</option>
+                <option>Assigned</option>
+                <option>In Progress</option>
+                <option>In Review</option>
+                <option>Resolved</option>
+                <option>Rejected</option>
+            </select>
+
+            <div class="date-group">
+                <label>From</label>
+                <input type="date" id="start_date" value="{{ default_start }}">
+                <label>To</label>
+                <input type="date" id="end_date" value="{{ default_end }}" max="{{ today }}">
+            </div>
+
+            <label class="checkbox-inline">
+                <input type="checkbox" id="overdue_only">
+                Overdue
+            </label>
+
+            <button id="view_all_issues" class="btn btn-outline">
+                Reset
+            </button>
+
+        </div>
+    </div>
+
+
+    <!-- ================= ISSUES TABLE ================= -->
+    <div class="card table-card">
+
+        <div class="table-responsive">
+            <table class="issues-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Ward</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Deadline</th>
+                        <th>Action</th>
+                        <th>Support</th>
+                    </tr>
+                </thead>
+
+                <tbody id="issues_table">
+                    {% if issues %}
+                        {% for issue in issues %}
+                        <tr>
+                            <td>{{ issue.title }}</td>
+                            <td>{{ issue.status }}</td>
+                            <td>{{ issue.ward_name or '-' }}</td>
+                            <td>{{ issue.city_name or '-' }}</td>
+                            <td>{{ issue.state_name or '-' }}</td>
+                            <td>{{ issue.deadline or '-' }}</td>
+                            <td>
+                                <a href="{{ url_for('issues.issue_detail', issue_id=issue.issue_id) }}"
+                                   class="btn btn-sm">
+                                    View
+                                </a>
+                            </td>
+                            <td>
+                                👍 {{ issue.support_count or 0 }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">
+                                No issues found.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<!-- ================= ANALYTICS ================= -->
-<div style="margin-bottom:20px;">
-    <div style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:15px;">
-        {% for k, v in stats.items() %}
-        <div style="
-            padding:12px 18px;
-            background:#fafafa;
-            border:1px solid #ddd;
-            border-radius:6px;
-            min-width:140px;
-            text-align:center;">
-            <div style="font-size:13px; color:#666;">{{ k }}</div>
-            <div style="font-size:22px; font-weight:bold;">{{ v }}</div>
-        </div>
-        {% endfor %}
-    </div>
-
-    <canvas id="issuesChart" height="90"></canvas>
-</div>
-
-<!-- ================= PROFILE WARNING ================= -->
-{% if not profile_location or not profile_location.state_id or not profile_location.city_id %}
-<div style="
-    background:#fff3cd;
-    border:1px solid #ffeeba;
-    padding:10px;
-    border-radius:6px;
-    margin-bottom:15px;">
-    ⚠️ Your profile location is incomplete,
-    update location in profile to see relevant issues and stats.
-    <a href="{{ url_for('profile.update_profile') }}">Complete profile</a>
-</div>
-{% endif %}
-
-<!-- ================= FILTER BAR ================= -->
-<div style="margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;">
-
-    {% if role == 'super_admin' %}
-    <select id="state_filter">
-        <option value="">State</option>
-        {% for s in states %}
-            <option value="{{ s.state_id }}">{{ s.name }}</option>
-        {% endfor %}
-    </select>
-    {% endif %}
-
-    {% if role in ['super_admin','state_admin'] %}
-    <select id="city_filter">
-        <option value="">City</option>
-    </select>
-    {% endif %}
-
-    {% if role in ['super_admin','state_admin','municipal_admin'] %}
-    <select id="ward_filter">
-        <option value="">Ward</option>
-    </select>
-    {% endif %}
-
-    {% if role in ['super_admin','state_admin','municipal_admin','department_admin'] %}
-    <select id="department_filter">
-        <option value="">Department</option>
-    </select>
-    {% endif %}
-
-    <select id="status_filter">
-        <option value="">Status</option>
-        {% if role in ['super_admin','state_admin','municipal_admin'] %}
-            <option>Reported</option>
-            <option>Assigned</option>
-            <option>In Progress</option>
-            <option>In Review</option>
-            <option>Resolved</option>
-            <option>Rejected</option>
-        {% elif role == 'field_staff' %}
-            <option>Assigned</option>
-            <option>In Progress</option>
-            <option>Resolved</option>
-        {% else %}
-            <option>Reported</option>
-            <option>In Review</option>
-            <option>Resolved</option>
-        {% endif %}
-    </select>
-
-    <input type="text" id="search_input"
-           placeholder="Search by title or ID"
-           style="min-width:220px;">
-</div>
-
-<!-- ================= ISSUES TABLE ================= -->
-<table border="1" cellpadding="6" cellspacing="0"
-       style="width:100%; border-collapse:collapse;">
-
-    <thead style="background:#f0f0f0;">
-        <tr>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Ward</th>
-            <th>City</th>
-            <th>State</th>
-            <th>Deadline</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-
-    <tbody id="issues_table">
-        {% if issues %}
-            {% for issue in issues %}
-            <tr>
-                <td>{{ issue.title }}</td>
-                <td>{{ issue.status }}</td>
-                <td>{{ issue.ward_name or '-' }}</td>
-                <td>{{ issue.city_name or '-' }}</td>
-                <td>{{ issue.state_name or '-' }}</td>
-                <td>{{ issue.deadline or '-' }}</td>
-                <td>
-                    <a href="{{ url_for('issues.issue_detail', issue_id=issue.issue_id) }}">View</a>
-                </td>
-            </tr>
-            {% endfor %}
-        {% else %}
-        <tr>
-            <td colspan="7">No issues found.</td>
-        </tr>
-        {% endif %}
-    </tbody>
-</table>
-
-<!-- ================= PROFILE CONTEXT ================= -->
 <script>
 const PROFILE = {
     state_id: "{{ profile_location.state_id or '' }}",
     city_id:  "{{ profile_location.city_id or '' }}",
     ward_id:  "{{ profile_location.ward_id or '' }}"
 };
-</script>
+const TODAY = "{{ today }}";
 
-<!-- ================= SCRIPT ================= -->
-<script>
 document.addEventListener("DOMContentLoaded", () => {
 
-    const state  = document.getElementById("state_filter");
-    const city   = document.getElementById("city_filter");
-    const ward   = document.getElementById("ward_filter");
-    const dept   = document.getElementById("department_filter");
-    const status = document.getElementById("status_filter");
-    const search = document.getElementById("search_input");
-    const table  = document.getElementById("issues_table");
+    const stateInput = document.getElementById("state_filter");
+    const cityInput = document.getElementById("city_filter");
+    const wardInput = document.getElementById("ward_filter");
+    const deptInput = document.getElementById("department_filter");
+    const statusInput = document.getElementById("status_filter");
+    const searchInput = document.getElementById("search_input");
+    const startDateInput = document.getElementById("start_date");
+    const endDateInput = document.getElementById("end_date");
+    const tableBody = document.getElementById("issues_table");
+    const overdueCheckbox = document.getElementById("overdue_only");
+    const viewAllBtn = document.getElementById("view_all_issues");
+
+    if (endDateInput) endDateInput.max = TODAY;
+
+
+const statsData = {{ stats | default({}) | tojson }};
+
+
+const ctx = document.getElementById('issuesChart');
+
+if (ctx) {
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Reported','Assigned','In Progress','In Review','Resolved','Rejected','Overdue'],
+            datasets: [{
+                data: [
+                    statsData['Reported'] || 0,
+                    statsData['Assigned'] || 0,
+                    statsData['In Progress'] || 0,
+                    statsData['In Review'] || 0,
+                    statsData['Resolved'] || 0,
+                    statsData['Rejected'] || 0,
+                    statsData['Overdue'] || 0
+                ],
+                backgroundColor: '#4f6bed'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+}
+
+    function validateDates() {
+        let start = startDateInput.value ? new Date(startDateInput.value) : null;
+        let end = endDateInput.value ? new Date(endDateInput.value) : null;
+        const todayDate = new Date(TODAY);
+        let warning = "";
+
+        if (start && start > todayDate) { start = todayDate; warning += "Start date cannot be in the future. "; }
+        if (end && end > todayDate) { end = todayDate; warning += "End date cannot be in the future. "; }
+        if (start && end && start > end) { [start,end] = [end,start]; warning += "Start date swapped with end date. "; }
+
+        if (warning) alert(warning.trim());
+        if (start) startDateInput.value = start.toISOString().split("T")[0];
+        if (end) endDateInput.value = end.toISOString().split("T")[0];
+    }
+
+ function updateStatsCards(stats) {
+    const container = document.querySelector(".stats-grid");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    for (const [k, v] of Object.entries(stats)) {
+        const card = document.createElement("div");
+        card.className = "stat-card";
+
+        card.innerHTML = `
+            <div class="stat-label">${k}</div>
+            <div class="stat-value">${v}</div>
+        `;
+
+        container.appendChild(card);
+    }
+}
+
+    function updateChart(stats) {
+    if (!issuesChart) return;
+
+    issuesChart.data.datasets[0].data = [
+        stats['Reported'] || 0,
+        stats['Assigned'] || 0,
+        stats['In Progress'] || 0,
+        stats['In Review'] || 0,
+        stats['Resolved'] || 0,
+        stats['Rejected'] || 0,
+        stats['Overdue'] || 0
+    ];
+
+    issuesChart.update();
+}
 
     function loadIssues() {
-        const p = new URLSearchParams();
-        if (state?.value)  p.append("state_id", state.value);
-        if (city?.value)   p.append("city_id", city.value);
-        if (ward?.value)   p.append("ward_id", ward.value);
-        if (dept?.value)   p.append("department_id", dept.value);
-        if (status.value)  p.append("status", status.value);
-        if (search.value.trim()) p.append("search", search.value.trim());
+        validateDates();
+        const params = new URLSearchParams();
+        if(stateInput?.value) params.append("state_id", stateInput.value);
+        if(cityInput?.value) params.append("city_id", cityInput.value);
+        if(wardInput?.value) params.append("ward_id", wardInput.value);
+        if(deptInput?.value) params.append("department_id", deptInput.value);
+        if(statusInput?.value) params.append("status", statusInput.value);
+        if(searchInput?.value.trim()) params.append("search", searchInput.value.trim());
+        if(startDateInput?.value) params.append("start_date", startDateInput.value);
+        if(endDateInput?.value) params.append("end_date", endDateInput.value);
+        if(overdueCheckbox?.checked) params.append("overdue", "true");
 
-        fetch(`/dashboard/issues/filter?${p.toString()}`)
+        fetch(`/dashboard/issues/filter?${params.toString()}`)
             .then(r => r.json())
-            .then(d => {
-                table.innerHTML = "";
-                if (!d.issues?.length) {
-                    table.innerHTML = "<tr><td colspan='7'>No issues found.</td></tr>";
-                    return;
+            .then(data => {
+
+                if (data.warning) alert(data.warning);
+
+                if (data.corrected_dates) {
+                    if (data.corrected_dates.start_date)
+                        startDateInput.value = data.corrected_dates.start_date;
+                    if (data.corrected_dates.end_date)
+                        endDateInput.value = data.corrected_dates.end_date;
                 }
-                d.issues.forEach(i => {
-                    table.innerHTML += `
-                    <tr>
-                        <td>${i.title}</td>
-                        <td>${i.status}</td>
-                        <td>${i.ward_name || '-'}</td>
-                        <td>${i.city_name || '-'}</td>
-                        <td>${i.state_name || '-'}</td>
-                        <td>${i.deadline || '-'}</td>
-                        <td><a href="/issues/${i.issue_id}">View</a></td>
-                    </tr>`;
-                });
-            });
-    }
 
-    function loadCities(stateId, selectedCity=null) {
-        if (!city) return;
-        city.innerHTML = "<option value=''>City</option>";
-        ward && (ward.innerHTML = "<option value=''>Ward</option>");
-        dept && (dept.innerHTML = "<option value=''>Department</option>");
+                tableBody.innerHTML = "";
 
-        fetch(`/admin/get_cities?state_id=${stateId}`)
-            .then(r => r.json())
-            .then(d => {
-                d.cities.forEach(c =>
-                    city.innerHTML += `<option value="${c.city_id}">${c.name}</option>`
-                );
-                if (selectedCity) {
-                    city.value = selectedCity;
-                    loadWards(selectedCity, PROFILE.ward_id);
-                    loadDepartments(selectedCity);
+                if (!data.issues?.length) {
+                    tableBody.innerHTML = "<tr><td colspan='8'>No issues found.</td></tr>";
+                } else {
+
+                    data.issues.forEach(issue => {
+
+                        let supportButton = "";
+
+                        if ("{{ role }}" === "citizen") {
+
+                            if (issue.reported_by == "{{ session['user_id'] }}") {
+                                supportButton = `
+                                    <button disabled title="You cannot support your own issue">
+                                        Support
+                                    </button>`;
+                            }
+                            else if (["Resolved","Rejected"].includes(issue.status)) {
+                                supportButton = `
+                                    <button disabled title="This issue is closed for support">
+                                        Support
+                                    </button>`;
+                            }
+                            else {
+                                supportButton = `
+                                    <button type="button"
+                                        onclick="supportIssue(${issue.issue_id})">
+                                        Support
+                                    </button>`;
+                            }
+                        }
+
+                        tableBody.innerHTML += `
+                            <tr>
+                                <td>${issue.title}</td>
+                                <td>${issue.status}</td>
+                                <td>${issue.ward_name || '-'}</td>
+                                <td>${issue.city_name || '-'}</td>
+                                <td>${issue.state_name || '-'}</td>
+                                <td>${issue.deadline || '-'}</td>
+                                <td><a href="/issues/${issue.issue_id}" class="btn btn-primary">View</a></td>
+                                <td>
+                                    👍 ${issue.support_count || 0}
+                                    ${supportButton}
+                                </td>
+                            </tr>`;
+                    });
+
+                
+                updateStatsCards(data.stats);
+                updateChart(data.stats);
                 }
-                loadIssues();
             });
     }
+    let searchTimeout = null;
 
-    function loadWards(cityId, selectedWard=null) {
-        if (!ward) return;
-        ward.innerHTML = "<option value=''>Ward</option>";
-
-        fetch(`/admin/get_wards?city_id=${cityId}`)
-            .then(r => r.json())
-            .then(d => {
-                d.wards.forEach(w =>
-                    ward.innerHTML += `<option value="${w.ward_id}">${w.name}</option>`
-                );
-                if (selectedWard) ward.value = selectedWard;
-            });
+    function debounceSearch() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            loadIssues();
+        }, 300);
     }
-
-    function loadDepartments(cityId) {
-        if (!dept) return;
-        dept.innerHTML = "<option value=''>Department</option>";
-
-        fetch(`/admin/get_departments?city_id=${cityId}`)
-            .then(r => r.json())
-            .then(d => {
-                d.departments.forEach(dep =>
-                    dept.innerHTML += `<option value="${dep.department_id}">${dep.name}</option>`
-                );
-            });
-    }
-
-    // ---------- INITIAL BOOTSTRAP ----------
-    if (state && PROFILE.state_id) {
-        state.value = PROFILE.state_id;
-        loadCities(PROFILE.state_id, PROFILE.city_id);
-    } else if (PROFILE.city_id) {
-        loadWards(PROFILE.city_id, PROFILE.ward_id);
-        loadDepartments(PROFILE.city_id);
-        loadIssues();
-    } else {
-        loadIssues();
-    }
-
-    // ---------- EVENTS ----------
-    state?.addEventListener("change", () => {
-        if (!state.value) return loadIssues();
-        loadCities(state.value);
+    // Event listeners
+    stateInput?.addEventListener("change", () => {
+        if (!stateInput.value) {
+            if(cityInput) cityInput.innerHTML = "<option value=''>City</option>";
+            if(wardInput) wardInput.innerHTML = "<option value=''>Ward</option>";
+            if(deptInput) deptInput.innerHTML = "<option value=''>Department</option>";
+            loadIssues();
+            return;
+        }
+        loadCities(stateInput.value);
     });
 
-    city?.addEventListener("change", () => {
-        if (!city.value) return loadIssues();
-        loadWards(city.value);
-        loadDepartments(city.value);
-        loadIssues();
+    // City change → load wards
+    cityInput?.addEventListener("change", () => {
+        if (!cityInput.value) {
+            if(wardInput) wardInput.innerHTML = "<option value=''>Ward</option>";
+            if(deptInput) deptInput.innerHTML = "<option value=''>Department</option>";
+            loadIssues();
+            return;
+        }
+
+        loadWards(cityInput.value);
+        loadDepartments(cityInput.value);   // 🔥 THIS WAS MISSING
     });
 
-    ward?.addEventListener("change", loadIssues);
-    dept?.addEventListener("change", loadIssues);
-    status.addEventListener("change", loadIssues);
-    search.addEventListener("input", loadIssues);
+    // Ward / Department / Status
+    [wardInput, deptInput, statusInput]
+        .forEach(el => el?.addEventListener("change", loadIssues));
+    [startDateInput, endDateInput].forEach(el => el?.addEventListener("change", loadIssues));
+    searchInput?.addEventListener("input", debounceSearch);
+    overdueCheckbox?.addEventListener("change", loadIssues);
+    viewAllBtn?.addEventListener("click", e => {
+        e.preventDefault();
+        
+        if(stateInput) stateInput.value=""; if(cityInput) cityInput.value="";
+        if(wardInput) wardInput.value=""; if(deptInput) deptInput.value="";
+        if(statusInput) statusInput.value=""; searchInput.value="";
+        if(overdueCheckbox) overdueCheckbox.checked = false;
+        startDateInput.value="{{ default_start }}"; endDateInput.value="{{ default_end }}";
+        loadIssues();
+    });
+    // Cascading dropdowns
+    function loadCities(stateId){ 
+        if(!cityInput) return; cityInput.innerHTML="<option value=''>City</option>"; if(wardInput) wardInput.innerHTML="<option value=''>Ward</option>"; if(deptInput) deptInput.innerHTML="<option value=''>Department</option>";
+        fetch(`/admin/get_cities?state_id=${stateId}`).then(r=>r.json()).then(data=>{
+            data.cities.forEach(c => cityInput.innerHTML+=`<option value="${c.city_id}">${c.name}</option>`);
+            if(PROFILE.city_id) { cityInput.value=PROFILE.city_id; loadWards(PROFILE.city_id); loadDepartments(PROFILE.city_id); }
+            loadIssues();
+        });
+    }
+
+    function loadWards(cityId){
+        if(!wardInput) return; wardInput.innerHTML="<option value=''>Ward</option>";
+        fetch(`/admin/get_wards?city_id=${cityId}`).then(r=>r.json()).then(data=>{
+            data.wards.forEach(w => wardInput.innerHTML+=`<option value="${w.ward_id}">${w.name}</option>`);
+            if(PROFILE.ward_id) wardInput.value=PROFILE.ward_id;
+        });
+    }
+
+    function loadDepartments(cityId){
+        if(!deptInput) return; deptInput.innerHTML="<option value=''>Department</option>";
+        fetch(`/admin/get_departments?city_id=${cityId}`).then(r=>r.json()).then(data=>{
+            data.departments.forEach(dep => deptInput.innerHTML+=`<option value="${dep.department_id}">${dep.name}</option>`);
+        });
+    }
+
+    // Initialize filters
+    if(stateInput && PROFILE.state_id) loadCities(PROFILE.state_id);
+    else if(PROFILE.city_id){ loadWards(PROFILE.city_id); loadDepartments(PROFILE.city_id); loadIssues(); }
+    else loadIssues();
 });
 </script>
 
-<!-- ================= CHART ================= -->
 <script>
-new Chart(document.getElementById('issuesChart'), {
-    type: 'bar',
-    data: {
-        labels: ['Reported','Assigned','In Progress','In Review','Resolved','Rejected'],
-        datasets: [{
-            data: [
-                {{ stats['Reported'] }},
-                {{ stats['Assigned'] }},
-                {{ stats['In Progress'] }},
-                {{ stats['In Review'] }},
-                {{ stats['Resolved'] }},
-                {{ stats['Rejected'] }}
-            ],
-            backgroundColor: '#4f6bed'
-        }]
-    },
-    options: {
-        plugins: { legend: { display: false } },
-        scales: { y: { beginAtZero: true } }
-    }
-});
+function supportIssue(issueId){
+    fetch(`/issues/support/${issueId}`, { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+            if(data.success){
+                location.reload();  // refresh to update support count
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(() => alert("Something went wrong"));
+}
 </script>
 
 {% endblock %}

@@ -380,7 +380,7 @@ def create_user():
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-
+    
     # ---- GET CREATOR PROFILE FROM DB (AUTHORITATIVE) ----
     cursor.execute("""
     SELECT 
@@ -468,6 +468,13 @@ def create_user():
         password = request.form.get("password", "").strip()
         new_role = request.form.get("role")
 
+        cursor.execute("SELECT user_id FROM Users WHERE mobile=%s", (mobile,))
+
+        if cursor.fetchone():
+            cursor.close()
+            conn.close()
+            flash("Mobile no. already registered. Please verify.", "warning")
+            return redirect(url_for("admin.create_user"))
         # ---- ROLE VALIDATION ----
         if new_role not in allowed_roles:
             flash("You cannot create a user with equal or higher role.", "danger")

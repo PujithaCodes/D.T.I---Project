@@ -57,6 +57,17 @@
             <h4>Active Cases</h4>
             <p>{{ active_rate }}%</p>
         </div>
+
+        <div class="stat-card">
+            <h4>Citizen Satisfaction</h4>
+                <p>
+                    {{ avg_rating }} / 5
+                    {% for i in range(avg_rating|int) %}
+                        ⭐
+                    {% endfor %}
+                </p>
+            <small>Based on {{ total_rated }} feedbacks submitted</small>
+        </div>
     </div>
 </section>
 

@@ -1,19 +1,18 @@
-<!-- templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Civic Issue System{% endblock %}</title>
+    <title>{% block title %}Public Issue Reporting and Tracking System (PIRATS){% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <!-- Header -->
-    <header>
+    <header class="site-header">
         <div class="container header-container">
             <h1>
                 <a href="{{ url_for('main.home') }}" class="logo">
-                    Civic Issue Management
+                    PIRATS
                 </a>
             </h1>
             <nav>
@@ -47,9 +46,9 @@
     </main>
 
     <!-- Footer -->
-    <footer>
+    <footer class="site-footer">
         <div class="container">
-            <p>&copy; {{ current_year or 2026 }} Civic Issue Management System</p>
+            <p>&copy; {{ current_year or 2026 }} Public Issue Reporting and Tracking System (PIRATS)</p>
         </div>
     </footer>
 </body>

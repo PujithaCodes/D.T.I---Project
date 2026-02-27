@@ -3,19 +3,41 @@
 {% block title %}Verify OTP{% endblock %}
 
 {% block content %}
+<div class="center-page">
+ 
+    <div class ="auth-card"> 
 <h2>Verify OTP</h2>
 
 <p>OTP sent to: <strong>{{ mobile }}</strong> (Valid for 1 minute)</p>
 
 <form method="POST" action="{{ url_for('otp_bp.verify_otp') }}">
-    <label>Enter OTP:</label>
-    <input type="text" name="otp" placeholder="6-digit OTP" required><br><br>
+    <div class="form-group"></div>
+    <label>Enter OTP:</label><br>
+    <input 
+        type="tel" 
+        name="otp" 
+        placeholder="6-digit OTP" 
+        maxlength="6"
+        inputmode="numeric"
+        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+        required>
+  <br><br>
 
-    <button type="submit">Verify OTP</button>
+        <button type="submit" class="btn btn-primary">Verify OTP</button>
+    
+        <button 
+            type="submit" 
+            formaction="{{ url_for('otp_bp.resend_otp') }}"
+            class = "btn btn-primary"
+            formnovalidate>
+            Resend OTP
+        </button>
+    </div>
+
 </form>
 
-<p>
-    Didn't receive OTP? 
-    <a href="{{ url_for('otp_bp.request_otp') }}">Request again</a>
-</p>
+</div>
+
+</div>
+
 {% endblock %}

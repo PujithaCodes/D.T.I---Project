@@ -4,122 +4,203 @@
 
 {% block content %}
 
-<h2>{{ issue.title }}</h2>
-<hr>
+<div class="issue-detail-wrapper">
 
-<!-- ================= META ================= -->
-<div class="issue-meta">
-    <p><strong>Status:</strong> {{ issue.current_status }}</p>
-    <p><strong>Category:</strong> {{ issue.category }}</p>
-    <p><strong>Deadline:</strong>
-        {{ issue.deadline.strftime('%d %b %Y, %H:%M') if issue.deadline else '-' }}
-    </p>
-</div>
+    <!-- ================= TITLE ================= -->
+    <div class="issue-detail-card">
+        <h2 class="issue-title">{{ issue.title }}</h2>
 
-<hr>
+        <div class="issue-meta">
+            <p><strong>Status:</strong> {{ issue.current_status }}</p>
+            <p><strong>Category:</strong> {{ issue.category }}</p>
+            <p><strong>Deadline:</strong>
+                {{ issue.deadline.strftime('%d %b %Y, %H:%M') if issue.deadline else '-' }}
+            </p>
 
-<!-- ================= DESCRIPTION ================= -->
-<h3>Description</h3>
-<p>{{ issue.description }}</p>
-
-<hr>
-
-<!-- ================= LOCATION ================= -->
-<h3>Location</h3>
-<p>
-    {{ issue.state_name or '-' }} →
-    {{ issue.city_name or '-' }} →
-    {{ issue.ward_name or '-' }}
-</p>
-
-<hr>
-
-<!-- ================= IMAGES ================= -->
-<h3>Images</h3>
-
-{% if images %}
-<div class="image-grid">
-    {% for img in images %}
-        <div class="image-card">
-            <img src="/{{ img.file_path }}"
-                 class="issue-thumb"
-                 onclick="openImage(this.src)"
-                 alt="Issue Image">
-
-            <a href="/{{ img.file_path }}"
-               download
-               class="download-btn">
-                ⬇ Download
-            </a>
+            {% if session.role in ['municipal_admin', 'department_admin', 'field_staff', 'facilitator'] and reporter %}
+                <p><strong>Reported By:</strong> {{ reporter.name }}</p>
+                {% if reporter.mobile %}
+                    <p><strong>Mobile:</strong> {{ reporter.mobile }}</p>
+                {% endif %}
+            {% endif %}
         </div>
-    {% endfor %}
-</div>
-{% else %}
-<p>No images uploaded.</p>
-{% endif %}
+    </div>
 
-<hr>
 
-<!-- ================= TIMELINE ================= -->
-<h3>Status Timeline</h3>
-{% if timeline %}
-<ul>
-    {% for t in timeline %}
-    <li style="margin-bottom:12px;">
-        <strong>{{ t.status }}</strong> – {{ t.remarks }}<br>
-        <small>{{ t.name }} | {{ t.updated_at }}</small>
-    </li>
-    {% endfor %}
-</ul>
-{% else %}
-<p>No status updates yet.</p>
-{% endif %}
+    <!-- ================= DESCRIPTION ================= -->
+    <div class="issue-detail-card">
+        <h3>Description</h3>
+        <p>{{ issue.description }}</p>
+    </div>
 
-<hr>
 
-<!-- ================= ADMIN ACTIONS ================= -->
-{% if session.role == 'municipal_admin' and not issue.assigned_department %}
-<a href="{{ url_for('issues.assign_issue', issue_id=issue.issue_id) }}"
-   class="btn">
-    Assign Issue
-</a>
-<br><br>
-{% endif %}
+    <!-- ================= LOCATION ================= -->
+    <div class="issue-detail-card">
+        <h3>Location</h3>
+        <p>
+            {{ issue.state_name or '-' }} →
+            {{ issue.city_name or '-' }} →
+            {{ issue.ward_name or '-' }}
+        </p>
+    </div>
 
-{% if session.role in ['department_admin', 'field_staff', 'municipal_admin'] %}
-<h3>Update Status</h3>
 
-<form method="POST"
-      action="{{ url_for('issues.update_issue_status', issue_id=issue.issue_id) }}">
+    <!-- ================= IMAGES ================= -->
+    <div class="issue-detail-card">
+        <h3>Images</h3>
 
-    <label>Status</label><br>
-    <select name="status" required>
-        {% for s in ['In Progress', 'In Review', 'Resolved'] %}
-        <option value="{{ s }}" {% if issue.current_status == s %}selected{% endif %}>
-            {{ s }}
-        </option>
-        {% endfor %}
+        {% if images %}
+        <div class="image-grid">
+            {% for img in images %}
+                <div class="image-card">
+                    <img src="/{{ img.file_path }}"
+                         class="issue-thumb"
+                         onclick="openImage(this.src)"
+                         alt="Issue Image">
 
-        {% if session.role == 'municipal_admin' %}
-        <option value="Rejected"
-            {% if issue.current_status == 'Rejected' %}selected{% endif %}>
-            Rejected
-        </option>
+                    <a href="/{{ img.file_path }}"
+                       download
+                       class="btn btn-outline download-btn">
+                        ⬇ Download
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p>No images uploaded.</p>
         {% endif %}
-    </select><br><br>
+    </div>
 
-    <label>Remarks</label><br>
-    <textarea name="remarks" required></textarea><br><br>
 
-    <button type="submit" class="btn">Update Status</button>
-</form>
-{% endif %}
+    <!-- ================= FEEDBACK ================= -->
+    {% if issue.is_closed %}
+    <div class="issue-detail-card">
+        <h3>Citizen Feedback</h3>
+        <p><strong>Rating:</strong> ⭐ {{ issue.rating }}</p>
+        <p><strong>Comment:</strong> {{ issue.feedback }}</p>
+    </div>
+    {% endif %}
 
-<br>
 
-<a href="{{ url_for('dashboard.dashboard') }}" class="btn">
-    ⬅ Back to Dashboard
-</a>
+    <!-- ================= TIMELINE ================= -->
+    <div class="issue-detail-card">
+        <h3>Status Timeline</h3>
+
+        {% if timeline %}
+        <ul class="timeline">
+            {% for t in timeline %}
+            <li>
+                <strong>{{ t.status }}</strong> – {{ t.remarks }}<br>
+                <small>{{ t.name }} | {{ t.updated_at }}</small>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <p>No status updates yet.</p>
+        {% endif %}
+    </div>
+
+
+    <!-- ================= FEEDBACK FORM ================= -->
+    {% if issue.current_status == 'Resolved'
+          and not issue.is_closed
+          and session.user_id == issue.reported_by %}
+
+    <div class="issue-detail-card">
+        <h3>Rate This Issue</h3>
+
+        <form method="POST"
+              action="{{ url_for('issues.submit_feedback', issue_id=issue.issue_id) }}">
+
+            <div class="star-rating">
+                <input type="hidden" name="rating" id="ratingInput" required>
+
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+            </div>
+
+            <br>
+
+            <label>Feedback</label><br>
+            <textarea name="feedback" required></textarea><br><br>
+
+            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+        </form>
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================= ASSIGN ISSUE ================= -->
+    {% if session.role == 'municipal_admin'
+          and not issue.assigned_department
+          and issue.current_status not in ['Resolved', 'Rejected']
+          and not issue.is_closed %}
+
+    <div class="issue-detail-card">
+        <a href="{{ url_for('issues.assign_issue', issue_id=issue.issue_id) }}"
+           class="btn btn-primary">
+            Assign Issue
+        </a>
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================= UPDATE STATUS ================= -->
+    {% if session.role in ['department_admin', 'field_staff', 'municipal_admin']
+          and issue.current_status not in ['Reported', 'Resolved', 'Rejected']
+          and not issue.is_closed %}
+
+    <div class="issue-detail-card">
+        <h3>Update Status</h3>
+
+        <form method="POST"
+              action="{{ url_for('issues.update_issue_status', issue_id=issue.issue_id) }}">
+
+            {% if issue.assigned_department and issue.current_status not in ['Resolved', 'Rejected'] %}
+
+                <label>Status</label><br>
+                <select name="status" required>
+                    {% set transitions = {
+                        "Assigned": ["In Progress","Rejected"],
+                        "In Progress": ["In Review"],
+                        "In Review": ["Resolved"]
+                    } %}
+
+                    {% for s in transitions.get(issue.current_status, []) %}
+                        <option value="{{ s }}">{{ s }}</option>
+                    {% endfor %}
+                </select>
+
+                <br><br>
+
+                <label>Remarks</label><br>
+                <textarea name="remarks" required></textarea><br><br>
+
+                <button type="submit" class="btn btn-primary">Update Status</button>
+
+            {% else %}
+                <p>Status cannot be updated at this stage.</p>
+            {% endif %}
+        </form>
+    </div>
+
+    {% endif %}
+
+
+    <!-- ================= BACK BUTTON ================= -->
+    <div class="issue-detail-card">
+        <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-primary">
+            ⬅ Back to Dashboard
+        </a>
+    </div>
+
+</div>
+
 
 <!-- ================= IMAGE MODAL ================= -->
 <div id="imageModal" class="image-modal">
@@ -127,59 +208,6 @@
     <img id="modalImage" alt="Full Image">
 </div>
 
-<!-- ================= STYLES ================= -->
-<style>
-.image-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-}
-
-.image-card {
-    text-align: center;
-}
-
-.issue-thumb {
-    width: 200px;
-    border: 1px solid #ccc;
-    padding: 4px;
-    cursor: pointer;
-}
-
-.download-btn {
-    display: block;
-    margin-top: 6px;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.image-modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.9);
-    justify-content: center;
-    align-items: center;
-    z-index: 99999;
-}
-
-.image-modal img {
-    max-width: 90%;
-    max-height: 90%;
-    cursor: grab;
-    transition: transform 0.05s ease-out;
-}
-
-
-.close-btn {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    font-size: 28px;
-    color: white;
-    cursor: pointer;
-}
-</style>
 
 <!-- ================= SCRIPT ================= -->
 <script>
@@ -191,6 +219,8 @@ let startX, startY;
 
 const modal = document.getElementById("imageModal");
 const modalImg = document.getElementById("modalImage");
+const stars = document.querySelectorAll(".star");
+const ratingInput = document.getElementById("ratingInput");
 
 function openImage(src) {
     modalImg.src = src;
@@ -209,6 +239,34 @@ function applyTransform() {
     modalImg.style.transform =
         `translate(${originX}px, ${originY}px) scale(${scale})`;
 }
+
+
+function highlightStars(value) {
+    stars.forEach(star => {
+        star.classList.remove("hover", "selected");
+        if (star.getAttribute("data-value") <= value) {
+            star.classList.add("selected");
+        }
+    });
+}
+
+stars.forEach(star => {
+
+    star.addEventListener("mouseover", () => {
+        const value = star.getAttribute("data-value");
+        highlightStars(value);
+    });
+
+    star.addEventListener("mouseout", () => {
+        highlightStars(ratingInput.value);
+    });
+
+    star.addEventListener("click", () => {
+        const value = star.getAttribute("data-value");
+        ratingInput.value = value;
+        highlightStars(value);
+    });
+});
 
 /* -------- ZOOM WITH MOUSE WHEEL -------- */
 modalImg.addEventListener("wheel", (e) => {

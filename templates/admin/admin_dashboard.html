@@ -5,12 +5,11 @@
 {% block content %}
 <h1>{{ role|capitalize }} Dashboard</h1>
 
-<div style="margin-bottom: 15px;">
+<div class="dashboard-actions">
     {% if role in ['super_admin', 'state_admin', 'municipal_admin'] %}
-        <a href="{{ url_for('admin.view_users') }}" class="btn">View Users</a>
+        <a href="{{ url_for('admin.view_users') }}" class="btn btn-primary">View Users</a>
     {% endif %}
-        <a href="{{ url_for('dashboard.issues_dashboard') }}" class="btn">View Issues Dashboard</a>
-
+    <a href="{{ url_for('dashboard.issues_dashboard') }}" class="btn btn-primary">View Issues Dashboard</a>
 </div>
 
 {% endblock %}
