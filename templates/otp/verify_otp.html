@@ -1,42 +1,54 @@
-<!-- templates/otp/verify_otp.html -->
 {% extends "base.html" %}
+
+{% block body_class %}auth-page{% endblock %}
+
 {% block title %}Verify OTP{% endblock %}
 
 {% block content %}
-<div class="center-page">
- 
-    <div class ="auth-card"> 
-<h2>Verify OTP</h2>
 
-<p>OTP sent to: <strong>{{ mobile }}</strong> (Valid for 1 minute)</p>
+<div class="auth-container">
 
-<form method="POST" action="{{ url_for('otp_bp.verify_otp') }}">
-    <div class="form-group"></div>
-    <label>Enter OTP:</label><br>
-    <input 
-        type="tel" 
-        name="otp" 
-        placeholder="6-digit OTP" 
-        maxlength="6"
-        inputmode="numeric"
-        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-        required>
-  <br><br>
+    <div class="auth-card">
 
-        <button type="submit" class="btn btn-primary">Verify OTP</button>
-    
-        <button 
-            type="submit" 
-            formaction="{{ url_for('otp_bp.resend_otp') }}"
-            class = "btn btn-primary"
-            formnovalidate>
-            Resend OTP
-        </button>
+        <h2 class="auth-title">Verify OTP</h2>
+
+        <p class="otp-info">
+            OTP sent to: <strong>{{ mobile }}</strong><br>
+            <span>(Valid for 1 minute)</span>
+        </p>
+
+        <form method="POST" action="{{ url_for('otp_bp.verify_otp') }}">
+
+            <div class="form-group">
+                <input 
+                    type="tel" 
+                    name="otp" 
+                    placeholder="Enter 6-digit OTP"
+                    maxlength="6"
+                    inputmode="numeric"
+                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    required>
+            </div>
+
+            <div class="otp-actions">
+
+                <button type="submit" class="btn-primary">
+                    ✅ Verify OTP
+                </button>
+
+                <button 
+                    type="submit"
+                    formaction="{{ url_for('otp_bp.resend_otp') }}"
+                    class="btn-secondary"
+                    formnovalidate>
+                    🔄 Resend OTP
+                </button>
+
+            </div>
+
+        </form>
+
     </div>
-
-</form>
-
-</div>
 
 </div>
 

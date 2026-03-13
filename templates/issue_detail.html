@@ -1,14 +1,14 @@
 <!-- templates/issue_detail.html -->
 {% extends "base.html" %}
 {% block title %}Issue Details{% endblock %}
-
+{% block body_class %}issue-detail-page{% endblock %}
 {% block content %}
 
 <div class="issue-detail-wrapper">
 
     <!-- ================= TITLE ================= -->
     <div class="issue-detail-card">
-        <h2 class="issue-title">{{ issue.title }}</h2>
+        <h2 class="issue-detail-title">{{ issue.title }}</h2>
 
         <div class="issue-meta">
             <p><strong>Status:</strong> {{ issue.current_status }}</p>
@@ -29,7 +29,7 @@
 
     <!-- ================= DESCRIPTION ================= -->
     <div class="issue-detail-card">
-        <h3>Description</h3>
+        <h3 class="issue-section-title">Description</h3>
         <p>{{ issue.description }}</p>
     </div>
 
@@ -87,7 +87,7 @@
         <h3>Status Timeline</h3>
 
         {% if timeline %}
-        <ul class="timeline">
+        <ul class="issue-timeline">
             {% for t in timeline %}
             <li>
                 <strong>{{ t.status }}</strong> – {{ t.remarks }}<br>
@@ -112,7 +112,7 @@
         <form method="POST"
               action="{{ url_for('issues.submit_feedback', issue_id=issue.issue_id) }}">
 
-            <div class="star-rating">
+            <div class="issue-rating">
                 <input type="hidden" name="rating" id="ratingInput" required>
 
                 <span class="star" data-value="1">&#9733;</span>
@@ -151,7 +151,7 @@
 
 
     <!-- ================= UPDATE STATUS ================= -->
-    {% if session.role in ['department_admin', 'field_staff', 'municipal_admin']
+    {% if session.role in ['department_admin', 'field_staff']
           and issue.current_status not in ['Reported', 'Resolved', 'Rejected']
           and not issue.is_closed %}
 
@@ -203,7 +203,7 @@
 
 
 <!-- ================= IMAGE MODAL ================= -->
-<div id="imageModal" class="image-modal">
+<div id="imageModal" class="issue-image-modal">
     <span class="close-btn" onclick="closeImage()">✖</span>
     <img id="modalImage" alt="Full Image">
 </div>

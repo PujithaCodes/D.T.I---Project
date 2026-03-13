@@ -1,0 +1,24 @@
+/* ================= OTP TEXT ================= */
+
+.otp-info{
+    text-align:center;
+    margin-bottom:20px;
+    font-size:15px;
+    opacity:0.9;
+}
+
+.otp-info span{
+    font-size:13px;
+    opacity:0.8;
+}
+
+
+/* ================= OTP BUTTONS ================= */
+
+.otp-actions{
+    margin-top:15px;
+
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+}

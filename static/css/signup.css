@@ -1,0 +1,19 @@
+/* checkbox styling */
+
+.checkbox-label{
+    margin-top:10px;
+    font-size:14px;
+}
+
+.checkbox-label input{
+    margin-right:6px;
+}
+
+
+/* footer */
+
+.auth-note{
+    margin-top:10px;
+    font-size:13px;
+    opacity:0.85;
+}

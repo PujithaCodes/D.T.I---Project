@@ -1,0 +1,283 @@
+/* =================================
+   DASHBOARD PAGE
+================================= */
+
+.dashboard-page{
+    background: linear-gradient(-45deg,#16222a,#3a6073,#2c3e50,#4b134f);
+    background-size:400% 400%;
+    animation:gradientMove 15s ease infinite;
+}
+
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+/* Layout */
+
+.dashboard-wrapper{
+    max-width:1200px;
+    margin:auto;
+    padding:30px;
+}
+
+/* =================================
+   HEADER
+================================= */
+
+.dashboard-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    margin-bottom:25px;
+}
+
+.dashboard-header h2{
+    color:white;
+    font-size:30px;
+}
+
+/* Action buttons */
+
+.action-bar{
+    display:flex;
+    gap:12px;
+}
+
+/* =================================
+   CARD STYLE
+================================= */
+
+.card{
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(15px);
+
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,0.2);
+
+    padding:22px;
+    margin-bottom:25px;
+
+    color:white;
+
+    box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* =================================
+   STATS GRID
+================================= */
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:15px;
+    margin-top:15px;
+}
+
+.stat-card{
+    background:rgba(255,255,255,0.15);
+    padding:18px;
+    border-radius:10px;
+    text-align:center;
+    transition:0.25s;
+}
+
+.stat-card:hover{
+    transform:translateY(-4px);
+}
+
+.stat-label{
+    font-size:14px;
+    opacity:0.8;
+}
+
+.stat-value{
+    font-size:26px;
+    font-weight:700;
+}
+
+/* =================================
+   CHART
+================================= */
+
+
+.chart-card {
+    background: #ffffff;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.chart-card canvas {
+    width: 100% !important;
+    height: 300px !important;
+}
+
+/* =================================
+   PROFILE WARNING
+================================= */
+
+.warning-box{
+    background:rgba(255,180,0,0.15);
+    border:1px solid rgba(255,180,0,0.4);
+
+    padding:15px;
+    border-radius:10px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    color:white;
+}
+
+/* =================================
+   FILTER SECTION
+================================= */
+
+.filter-wrapper{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.filter-search input{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+}
+
+.filter-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+}
+
+.filter-row select,
+.filter-row input[type="date"]{
+    color:white;
+    padding:8px;
+    border-radius:6px;
+    border:none;
+}
+
+.date-group{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.checkbox-inline{
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+
+/* =================================
+   TABLE
+================================= */
+
+.table-responsive{
+    overflow-x:auto;
+}
+
+.issues-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.issues-table th,
+.issues-table td{
+    padding:12px;
+    text-align:left;
+}
+
+.issues-table thead{
+    background:rgba(255,255,255,0.15);
+}
+
+.issues-table tbody tr{
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+
+.issues-table tbody tr:hover{
+    background:rgba(255,255,255,0.08);
+}
+
+/* Center text */
+
+.text-center{
+    text-align:center;
+}
+
+/* =================================
+   BUTTON STYLES
+================================= */
+
+.btn{
+    padding:8px 16px;
+    border-radius:6px;
+    text-decoration:none;
+    font-size:14px;
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,#00c6ff,#0072ff);
+    color:white;
+}
+
+.btn-outline{
+    border:1px solid white;
+    color:white;
+    background:transparent;
+}
+
+.btn-outline:hover{
+    background:white;
+    color:black;
+}
+
+/* ===============================
+   STATUS BADGES
+================================ */
+
+.status-badge{
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:600;
+    color:white;
+    letter-spacing:0.4px;
+}
+
+/* Status colors */
+
+.status-Reported{
+    background:#2196f3;
+}
+
+.status-Assigned{
+    background:#7c4dff;
+}
+
+.status-In-Progress{
+    background:#ff9800;
+}
+
+.status-In-Review{
+    background:#009688;
+}
+
+.status-Resolved{
+    background:#4caf50;
+}
+
+.status-Rejected{
+    background:#f44336;
+}

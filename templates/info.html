@@ -1,27 +1,42 @@
 {% extends "base.html" %}
 
+{% block body_class %}info-page-body{% endblock %}
+
 {% block title %}About Public Issue System{% endblock %}
 
 {% block content %}
 <div class="info-page">
 
-    <!-- HERO SECTION -->
     <section class="hero-section">
-        <h2>Public Issue Reporting & Tracking System</h2>
-        <p>
-            A centralized platform enabling citizens and authorities to ensure
-            transparency, accountability, and timely resolution of civic issues.
-        </p>
 
-        <p class="hero-highlight">
-            Report. Track. Resolve.
-        </p>
-        <p class="hero-note">
-            Use the navigation menu above to Register, Login, or access your Dashboard.
-        </p>
+        <div class="hero-container">
+
+            <div class="hero-text">
+                <h2>Public Issue Reporting & Tracking System</h2>
+
+                <p>
+                    A centralized platform enabling citizens and authorities to ensure
+                    transparency, accountability, and timely resolution of civic issues.
+                </p>
+
+                <p class="hero-highlight">
+                    Report. Track. Resolve.
+                </p>
+
+                <p class="hero-note">
+                    Use the navigation menu above to Register, Login, or access your Dashboard.
+                </p>
+            </div>
+
+            <div class="hero-image-container">
+                <img src="{{ url_for('static', filename='images/issues.jpeg') }}" 
+                alt="Public Issue Reporting System"
+                class="hero-image">
+            </div>
+
+        </div>
 
     </section>
-
 
     <!-- LIVE STATISTICS -->
     <section class="stats-section">

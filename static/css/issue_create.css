@@ -1,0 +1,231 @@
+/* ==============================
+   ISSUE CREATE PAGE
+============================== */
+
+/* Page animated background */
+
+.issue-create-page{
+    margin:0;
+    font-family:'Poppins', sans-serif;
+
+    background: linear-gradient(-45deg,#134e5e,#0f3443,#2c7744,#0b3d2e);
+    background-size:400% 400%;
+    animation:issueCreateGradient 12s ease infinite;
+}
+
+/* Gradient animation */
+
+@keyframes issueCreateGradient{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+
+/* Page layout */
+
+.issue-create-wrapper{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:90vh;
+    padding:40px;
+}
+
+
+/* Main card */
+
+.issue-create-card{
+
+    width:540px;
+
+    padding:35px;
+
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(18px);
+
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.3);
+
+    box-shadow:
+        0 12px 35px rgba(0,0,0,0.25),
+        0 0 20px rgba(255,255,255,0.15);
+
+    color:white;
+
+    transition:0.35s;
+}
+
+.issue-create-card:hover{
+    transform:translateY(-6px);
+}
+
+
+/* Title */
+
+.issue-create-title{
+    text-align:center;
+    font-size:26px;
+    font-weight:700;
+    margin-bottom:20px;
+}
+
+
+/* Similar issues box */
+
+.issue-create-similar-box{
+
+    background:rgba(255,255,255,0.15);
+
+    padding:15px;
+    border-radius:10px;
+
+    margin-bottom:20px;
+}
+
+.issue-create-similar-title{
+    margin-bottom:6px;
+}
+
+.issue-create-note{
+    font-size:13px;
+    opacity:0.9;
+    margin-bottom:10px;
+}
+
+.issue-create-similar-list{
+    padding-left:18px;
+}
+
+.issue-create-similar-item{
+    margin-bottom:6px;
+}
+
+.issue-create-status{
+    margin-left:6px;
+    opacity:0.9;
+}
+
+.issue-create-support{
+    margin-left:6px;
+}
+
+
+/* Form */
+
+.issue-create-form{
+    display:flex;
+    flex-direction:column;
+    background-color: transparent;
+}
+
+
+/* Form group */
+
+.issue-create-group{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:14px;
+}
+
+.issue-create-group label{
+    margin-bottom:5px;
+    font-weight:600;
+}
+
+
+/* Inputs */
+
+.issue-create-group input,
+.issue-create-group textarea,
+.issue-create-group select{
+
+    padding:10px;
+
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.5);
+
+    background:rgba(255,255,255,0.1);
+    color:white;
+
+    font-size:14px;
+
+    transition:0.25s;
+}
+
+.issue-create-group textarea{
+    resize:vertical;
+}
+
+
+/* Input focus */
+
+.issue-create-group input:focus,
+.issue-create-group textarea:focus,
+.issue-create-group select:focus{
+
+    outline:none;
+
+    box-shadow:0 0 10px rgba(255,255,255,0.7);
+    transform:scale(1.02);
+}
+
+
+/* Form actions */
+
+.issue-create-actions{
+    margin-top:10px;
+    text-align:center;
+}
+
+
+/* Back button spacing */
+
+.issue-create-back{
+    display:block;
+    margin-top:15px;
+    text-align:center;
+}
+
+
+/* Select dropdown options */
+
+.issue-create-group select option{
+    color:black;
+}
+
+/* File input field */
+
+.issue-create-group input[type="file"]{
+    color: white;
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 8px;
+    padding: 8px;
+    background: transparent;
+}
+
+/* Style the "Choose File" button */
+
+.issue-create-group input[type="file"]::file-selector-button{
+
+    background: transparent;
+    color: white;
+
+    border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 6px;
+
+    padding: 6px 12px;
+    margin-right: 10px;
+
+    cursor: pointer;
+
+    transition: 0.25s;
+}
+
+/* Hover effect */
+
+.issue-create-group input[type="file"]::file-selector-button:hover{
+
+    background: rgba(255,255,255,0.15);
+    border-color: white;
+}

@@ -1,26 +1,37 @@
 {% extends "base.html" %}
 {% block title %}Users{% endblock %}
 
-{% block content %}
-<h2>User Management</h2>
+{% block body_class %}users-page{% endblock %}
 
-<!-- ================= CREATE USER BUTTON ================= -->
-<div style="margin-bottom:15px;">
-    <a href="{{ url_for('admin.create_user') }}" class="btn btn-success">
+{% block content %}
+
+<div class="page-container">
+<div class="card-container">
+
+<h2 class="card-title">User Management</h2>
+
+<!-- ACTION BUTTONS -->
+<div class="action-bar">
+
+    <a href="{{ url_for('admin.create_user') }}" class="btn-primary">
         ➕ Create New User
     </a>
 
-    <a href="{{ url_for('admin.view_users') }}" class="btn btn-primary">
+    <a href="{{ url_for('admin.view_users') }}" class="btn-secondary">
         View All Users
     </a>
     
-    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-primary">
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn-secondary">
         ⬅ Back to Dashboard
     </a>
+
 </div>
 
 <!-- ================= PROFILE WARNING ================= -->
-{% if role in ['state_admin','municipal_admin'] and (not profile_location.state_id or not profile_location.city_id) %}
+{% if (not profile_location or not profile_location.state_id or 
+        (not profile_location.city_id and role !='state_admin') or
+        (not profile_location.ward_id and role != 'state_admin' and role != 'municipal_admin'))
+         and role != 'super_admin' %}
 <div style="background:#fff3cd; border:1px solid #ffeeba; padding:10px; border-radius:6px; margin-bottom:15px;">
     ⚠️ Your profile location is incomplete. Filtering will rely on defaults.
     <a href="{{ url_for('profile.update_profile') }}">Complete profile</a>
@@ -65,44 +76,73 @@
 </div>
 
 <!-- ================= USERS TABLE ================= -->
-<table >
-    <thead >
-        <tr>
-            <th>Name</th>
-            <th>Mobile</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Ward</th>
-            <th>City</th>
-            <th>State</th>
-            <th>Verified</th>
-            <th>Assisted</th>
+
+<div class="users-table-wrapper">
+
+<table class="users-table">
+
+    <thead class="users-table-head">
+        <tr class="users-table-row header-row">
+            <th class="users-table-header">Name</th>
+            <th class="users-table-header">Mobile</th>
+            <th class="users-table-header">Email</th>
+            <th class="users-table-header">Role</th>
+            <th class="users-table-header">Ward</th>
+            <th class="users-table-header">City</th>
+            <th class="users-table-header">State</th>
+            <th class="users-table-header">Verified</th>
+            <th class="users-table-header">Assisted</th>
         </tr>
     </thead>
-    <tbody id="users_table">
+
+    <tbody id="users_table" class="users-table-body">
+
         {% for u in users %}
-        <tr>
-            <td>{{ u.name }}</td>
-            <td>{{ u.mobile }}</td>
-            <td>{{ u.email }}</td>
-            <td>{{ u.role }}</td>
-            <td>{{ u.ward_name or '-' }}</td>
-            <td>{{ u.city_name or '-' }}</td>
-            <td>{{ u.state_name or '-' }}</td>
-            <td>{{ 'Yes' if u.verified else 'No' }}</td>
-            <td>{{ 'Yes' if u.assisted_signup else 'No' }}</td>
+
+        <tr class="users-table-row">
+            <td class="users-table-cell">{{ u.name }}</td>
+            <td class="users-table-cell">{{ u.mobile }}</td>
+            <td class="users-table-cell">{{ u.email }}</td>
+            <td class="users-table-cell">{{ u.role }}</td>
+            <td class="users-table-cell">{{ u.ward_name or '-' }}</td>
+            <td class="users-table-cell">{{ u.city_name or '-' }}</td>
+            <td class="users-table-cell">{{ u.state_name or '-' }}</td>
+            
+            <td class="users-table-cell">
+                ${u.verified ? '<span class="status-true">✔</span>' : '<span class="status-false">✖</span>'}
+            </td>
+
+            <td class="users-table-cell">
+                ${u.assisted_signup ? '<span class="status-true">✔</span>' : '<span class="status-false">✖</span>'}
+            </td>
+           
         </tr>
+
         {% else %}
-        <tr><td colspan="9">No users found.</td></tr>
+
+        <tr class="users-table-row">
+            <td class="users-table-cell no-data" colspan="9">
+                No users found.
+            </td>
+        </tr>
+
         {% endfor %}
+
     </tbody>
+
 </table>
+
+</div>
+
+</div>
+</div>
 
 <!-- ================= PROFILE CONTEXT ================= -->
 <script>
 const PROFILE = {
     state_id: "{{ profile_location.state_id or '' }}",
-    city_id:  "{{ profile_location.city_id or '' }}"
+    city_id:  "{{ profile_location.city_id or '' }}",
+    ward_id:  "{{ profile_location.ward_id or '' }}"
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -138,8 +178,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             <td>${u.ward_name || '-'}</td>
                             <td>${u.city_name || '-'}</td>
                             <td>${u.state_name || '-'}</td>
-                            <td>${u.verified ? 'Yes' : 'No'}</td>
-                            <td>${u.assisted_signup ? 'Yes' : 'No'}</td>
+                            <td>${u.verified ? '<span class="status-true">✔</span>' : '<span class="status-false">✖</span>'}</td>
+                            <td>${u.assisted_signup ? '<span class="status-true">✔</span>' : '<span class="status-false">✖</span>'}</td>
                         </tr>`;
                 });
             });
@@ -148,8 +188,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---------- LOAD CITIES ----------
     function loadCities(stateId, selectedCity=null) {
         if (!city) return;
-        city.innerHTML = "<option value=''>--Select City--</option>";
-        ward && (ward.innerHTML = "<option value=''>--Select Ward--</option>");
+        city.innerHTML = "<option value=''>City</option>";
+        ward && (ward.innerHTML = "<option value=''>Ward</option>");
 
         fetch(`/admin/get_cities?state_id=${stateId}`)
             .then(r => r.json())
@@ -159,7 +199,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
                 if (selectedCity) {
                     city.value = selectedCity;
-                    loadWards(selectedCity);
+                    loadWards(selectedCity, PROFILE.ward_id);
                 }
                 loadUsers();
             });
@@ -168,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ---------- LOAD WARDS ----------
     function loadWards(cityId, selectedWard=null) {
         if (!ward) return;
-        ward.innerHTML = "<option value=''>--Select Ward--</option>";
+        ward.innerHTML = "<option value=''>Ward</option>";
 
         fetch(`/admin/get_wards?city_id=${cityId}`)
             .then(r => r.json())
@@ -176,43 +216,91 @@ document.addEventListener("DOMContentLoaded", () => {
                 d.wards.forEach(w =>
                     ward.innerHTML += `<option value="${w.ward_id}">${w.name}</option>`
                 );
-                if (selectedWard) ward.value = selectedWard;
+                if (selectedWard) {
+                    ward.value = selectedWard;
+                }
                 loadUsers();
             });
     }
 
-    // ---------- INITIALIZE ----------
+        // ---------- INITIALIZE ----------
 
     if (state && PROFILE.state_id) {
+
         // super_admin
         state.value = PROFILE.state_id;
         loadCities(PROFILE.state_id, PROFILE.city_id);
-    }
 
-    else if (!state && city && PROFILE.state_id) {
+    }
+    else if (city && PROFILE.state_id) {
+
         // state_admin
-        loadCities(PROFILE.state_id);
-    }
+        loadCities(PROFILE.state_id, PROFILE.city_id);
 
-    else if (!state && !city && ward && PROFILE.city_id) {
+    }
+    else if (ward && PROFILE.city_id) {
+
         // municipal_admin
-        loadWards(PROFILE.city_id);
-    }
+        loadWards(PROFILE.city_id, PROFILE.ward_id);
 
+    }
     else {
+
         loadUsers();
+
     }
 
 
     // ---------- EVENT LISTENERS ----------
     state?.addEventListener("change", () => {
-        state.value ? loadCities(state.value) : loadUsers();
-    });
-    city?.addEventListener("change", () => {
-        city.value ? loadWards(city.value) : loadUsers();
-    });
+
+    if (state.value) {
+
+        // load cities for selected state
+        loadCities(state.value);
+
+    } else {
+
+        // reset filters
+        if (city) city.innerHTML = "<option value=''>City</option>";
+        if (ward) ward.innerHTML = "<option value=''>Ward</option>";
+
+        loadUsers();
+    }
+
+});
+
+   city?.addEventListener("change", () => {
+
+    if (city.value) {
+
+        loadWards(city.value);
+
+    } else {
+
+        if (ward) ward.innerHTML = "<option value=''>Ward</option>";
+
+        loadUsers();
+    }
+
+});
     ward?.addEventListener("change", loadUsers);
     search.addEventListener("input", loadUsers);
 });
+
+table.innerHTML += `
+<tr class="users-table-row">
+    <td class="users-table-cell">${u.name}</td>
+    <td class="users-table-cell">${u.mobile}</td>
+    <td class="users-table-cell">${u.email}</td>
+    <td class="users-table-cell">${u.role}</td>
+    <td class="users-table-cell">${u.ward_name || '-'}</td>
+    <td class="users-table-cell">${u.city_name || '-'}</td>
+    <td class="users-table-cell">${u.state_name || '-'}</td>
+    <td class="users-table-cell">${u.verified ? '<span class="status-true">✔</span>' : '<span class="status-false">✖</span>'}</td>
+    <td class="users-table-cell">${u.assisted_signup ? '<span class="status-true">✔</span>' : '<span class="status-false">✖</span>'}</td>
+</tr>
+`;
+
 </script>
 {% endblock %}

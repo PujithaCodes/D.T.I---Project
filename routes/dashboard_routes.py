@@ -44,6 +44,18 @@ def issues_dashboard():
     """, (user_id,))
     user = cursor.fetchone()
 
+    # ---------------- DEPARTMENTS ----------------
+    departments = []
+
+    if user and user.get("city_id"):
+        cursor.execute("""
+            SELECT department_id, name
+            FROM Departments
+            WHERE city_id = %s
+            ORDER BY name
+        """, (user["city_id"],))
+        departments = cursor.fetchall()
+
     if not user:
         cursor.close()
         conn.close()
@@ -51,10 +63,11 @@ def issues_dashboard():
         return redirect(url_for("auth.login"))
 
     profile_location = {
-        "state_id": user.get("state_id"),
-        "city_id": user.get("city_id"),
-        "ward_id": user.get("ward_id")
-    }
+    "state_id": user.get("state_id"),
+    "city_id": user.get("city_id"),
+    "ward_id": user.get("ward_id"),
+    "department_id": user.get("department_id")
+}
 
     # ---------------- STATES ----------------
     cursor.execute("SELECT state_id, name FROM States ORDER BY name")
@@ -72,20 +85,16 @@ def issues_dashboard():
         where += " AND i.state_id = %s"
         params.append(user["state_id"])
 
-    elif role == "municipal_admin" and user.get("city_id"):
+    elif role in ["municipal_admin", "field_staff"] and user.get("city_id"):
         where += " AND i.city_id = %s"
         params.append(user["city_id"])
 
-    elif role in ["facilitator", "field_staff"] and user.get("ward_id"):
+    elif role == "facilitator"  and user.get("ward_id"):
         where += " AND i.ward_id = %s"
         params.append(user["ward_id"])
 
     elif role == "department_admin":
-        if user.get("department_id"):
-            where += " AND i.assigned_department = %s"
-            params.append(user["department_id"])
 
-        # Enforce geographic restriction
         if user.get("city_id"):
             where += " AND i.city_id = %s"
             params.append(user["city_id"])
@@ -108,7 +117,7 @@ def issues_dashboard():
 
         where += " AND (" + " OR ".join(citizen_conditions) + ")"
         params.extend(citizen_params)
-
+    
     # ---------------- ISSUES QUERY ----------------
     issues_query = f"""
     SELECT
@@ -131,7 +140,15 @@ def issues_dashboard():
     LEFT JOIN Wards w 
         ON i.ward_id = w.ward_id
     {where}
-    GROUP BY i.issue_id
+    GROUP BY 
+    i.issue_id,
+    i.title,
+    i.current_status,
+    i.deadline,
+    st.name,
+    c.name,
+    w.name,
+    i.reported_by
     ORDER BY i.created_at ASC
 """
     cursor.execute(issues_query, params)
@@ -141,14 +158,13 @@ def issues_dashboard():
     stats_query = f"""
         SELECT
             COUNT(*) AS Total,
-            SUM(CASE WHEN i.current_status='Reported' THEN 1 ELSE 0 END) AS Reported,
-            SUM(CASE WHEN i.current_status='Assigned' THEN 1 ELSE 0 END) AS Assigned,
-            SUM(CASE WHEN i.current_status='In Progress' THEN 1 ELSE 0 END) AS `In Progress`,
-            SUM(CASE WHEN i.current_status='In Review' THEN 1 ELSE 0 END) AS `In Review`,
-            SUM(CASE WHEN i.current_status='Resolved' THEN 1 ELSE 0 END) AS Resolved,
-            SUM(CASE WHEN i.current_status='Rejected' THEN 1 ELSE 0 END) AS Rejected,
-            -- compute overdue dynamically
-            SUM(CASE WHEN i.current_status NOT IN ('Resolved','Rejected') 
+            SUM(CASE WHEN LOWER(i.current_status)='reported' THEN 1 ELSE 0 END) AS Reported,
+            SUM(CASE WHEN LOWER(i.current_status)='assigned' THEN 1 ELSE 0 END) AS Assigned,
+            SUM(CASE WHEN LOWER(i.current_status)='in progress' THEN 1 ELSE 0 END) AS `In Progress`,
+            SUM(CASE WHEN LOWER(i.current_status)='in review' THEN 1 ELSE 0 END) AS `In Review`,
+            SUM(CASE WHEN LOWER(i.current_status)='resolved' THEN 1 ELSE 0 END) AS Resolved,
+            SUM(CASE WHEN LOWER(i.current_status)='rejected' THEN 1 ELSE 0 END) AS Rejected,
+            SUM(CASE WHEN LOWER(i.current_status) NOT IN ('resolved','rejected') 
                      AND i.deadline IS NOT NULL 
                      AND DATE(i.deadline) < CURDATE() THEN 1 ELSE 0 END) AS Overdue
         FROM Issues i
@@ -170,6 +186,7 @@ def issues_dashboard():
         issues=issues,
         stats=stats,
         states=states,
+        departments=departments,
         profile_location=profile_location
     )
 
@@ -217,22 +234,17 @@ def filter_issues():
         conditions.append("i.state_id = %s")
         params.append(user["state_id"])
 
-    elif role == "municipal_admin" and user.get("city_id"):
+    elif role in ["municipal_admin", "field_staff"] and user.get("city_id"):
         conditions.append("i.city_id = %s")
         params.append(user["city_id"])
 
-    elif role in ["facilitator", "field_staff"] and user.get("ward_id"):
+    elif role == "facilitator"  and user.get("ward_id"):
         conditions.append("i.ward_id = %s")
         params.append(user["ward_id"])
 
     elif role == "department_admin":
 
-    # Must match department
-        if user.get("department_id"):
-            conditions.append("i.assigned_department = %s")
-            params.append(user["department_id"])
-
-        # Must also match geographic scope
+        # department admins can see issues in their city
         if user.get("city_id"):
             conditions.append("i.city_id = %s")
             params.append(user["city_id"])
@@ -268,7 +280,7 @@ def filter_issues():
         conditions.append("i.assigned_department = %s")
         params.append(department_id)
     if status:
-        conditions.append("i.current_status = %s")
+        conditions.append("LOWER(i.current_status) = LOWER(%s)")
         params.append(status)
     if search:
         conditions.append("(i.title LIKE %s OR CAST(i.issue_id AS CHAR) LIKE %s)")
@@ -336,9 +348,17 @@ def filter_issues():
     LEFT JOIN Wards w 
         ON i.ward_id = w.ward_id
     {where_clause}
-    GROUP BY i.issue_id
+    GROUP BY 
+    i.issue_id,
+    i.title,
+    i.current_status,
+    i.deadline,
+    st.name,
+    c.name,
+    w.name,
+    i.reported_by
     ORDER BY i.created_at DESC
-"""
+    """
     cursor.execute(issues_query, params)
     issues = cursor.fetchall()
 
@@ -346,13 +366,13 @@ def filter_issues():
     stats_query = f"""
         SELECT
             COUNT(*) AS Total,
-            SUM(CASE WHEN i.current_status='Reported' THEN 1 ELSE 0 END) AS Reported,
-            SUM(CASE WHEN i.current_status='Assigned' THEN 1 ELSE 0 END) AS Assigned,
-            SUM(CASE WHEN i.current_status='In Progress' THEN 1 ELSE 0 END) AS `In Progress`,
-            SUM(CASE WHEN i.current_status='In Review' THEN 1 ELSE 0 END) AS `In Review`,
-            SUM(CASE WHEN i.current_status='Resolved' THEN 1 ELSE 0 END) AS Resolved,
-            SUM(CASE WHEN i.current_status='Rejected' THEN 1 ELSE 0 END) AS Rejected,
-            SUM(CASE WHEN i.current_status NOT IN ('Resolved','Rejected') 
+            SUM(CASE WHEN LOWER(i.current_status)='reported' THEN 1 ELSE 0 END) AS Reported,
+            SUM(CASE WHEN LOWER(i.current_status)='assigned' THEN 1 ELSE 0 END) AS Assigned,
+            SUM(CASE WHEN LOWER(i.current_status)='in progress' THEN 1 ELSE 0 END) AS `In Progress`,
+            SUM(CASE WHEN LOWER(i.current_status)='in review' THEN 1 ELSE 0 END) AS `In Review`,
+            SUM(CASE WHEN LOWER(i.current_status)='resolved' THEN 1 ELSE 0 END) AS Resolved,
+            SUM(CASE WHEN LOWER(i.current_status)='rejected' THEN 1 ELSE 0 END) AS Rejected,
+            SUM(CASE WHEN LOWER(i.current_status) NOT IN ('resolved','rejected') 
                     AND i.deadline IS NOT NULL 
                     AND DATE(i.deadline) < CURDATE() THEN 1 ELSE 0 END) AS Overdue
         FROM Issues i

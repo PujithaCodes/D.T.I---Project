@@ -1,0 +1,174 @@
+/* Animated Gradient Background */
+.issue-assign-page{
+    background: linear-gradient(-45deg,#1a1a2e,#16213e,#0f3460,#533483);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
+}
+
+/* Gradient animation */
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+/* Page Layout */
+.page-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:90vh;
+}
+
+/* Glass Card */
+.card-container{
+    width:540px;
+    padding:35px;
+
+    background:rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.3);
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.25),
+        0 0 20px rgba(255,255,255,0.2);
+
+    color:white;
+
+    transition:0.35s;
+}
+
+.card-container:hover{
+    transform:translateY(-6px) scale(1.01);
+}
+
+/* Title */
+.card-title{
+    text-align:center;
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:25px;
+    letter-spacing:1px;
+}
+
+/* Issue Info */
+.issue-info{
+    background:rgba(255,255,255,0.2);
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:18px;
+    font-size:14px;
+}
+
+/* Form Layout */
+.form-container{
+    display:flex;
+    flex-direction:column;
+    background-color: transparent;
+}
+
+/* Labels */
+.form-label{
+    margin-top:15px;
+    font-weight:600;
+}
+
+/* Inputs */
+.form-input{
+    margin-top:6px;
+    padding:11px;
+
+    border-radius:8px;
+    border:whitesmoke solid 1px;
+
+    background-color: transparent;
+
+
+    font-size:14px;
+
+    transition:0.25s;
+}
+
+/* Input Focus */
+.form-input:focus{
+    outline:none;
+    transform:scale(1.02);
+    box-shadow:0 0 10px rgba(255,255,255,0.7);
+}
+
+/* Buttons Container */
+.form-buttons{
+    margin-top:25px;
+    display:flex;
+    justify-content:space-between;
+}
+
+/* Primary Button */
+.btn-primary{
+    background:linear-gradient(135deg,#3b58da,#4facfe);
+    color:white;
+
+    padding:11px 20px;
+    border-radius:8px;
+    border:none;
+
+    font-weight:600;
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+.btn-primary:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 25px rgba(0,242,254,0.6);
+}
+
+/* Secondary Button */
+.btn-secondary{
+    background:linear-gradient(125deg,#ec814b,#ec5b5d);
+    color:white;
+
+    padding:11px 20px;
+    border-radius:8px;
+
+    text-decoration:none;
+    font-weight:600;
+
+    transition:0.3s;
+}
+
+.btn-secondary:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 25px rgba(255,94,98,0.6);
+}
+
+select.form-input{
+    background:transparent;
+    color:white;
+}
+
+select.form-input option{
+    color:black;
+}
+
+textarea.form-input{
+    background:rgba(255,255,255,0.1);
+    color:white;
+}
+
+input {
+    background:rgba(255,255,255,0.1);
+    color:white;
+}
+
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator{
+    filter: invert(1);
+    opacity: 0.9;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover{
+    opacity: 1;
+}

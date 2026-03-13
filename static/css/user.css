@@ -1,0 +1,305 @@
+/* ================= PAGE BACKGROUND ================= */
+
+.users-page{
+    background: linear-gradient(-45deg,#0f172a,#1e293b,#334155,#020617);
+    background-size:400% 400%;
+    animation:gradientMove 12s ease infinite;
+}
+
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+
+/* ================= PAGE LAYOUT ================= */
+
+.page-container{
+    display:flex;
+    justify-content:center;
+    padding:40px 20px;
+}
+
+
+/* ================= GLASS CARD ================= */
+
+.card-container{
+    width:95%;
+    max-width:1350px;
+    padding:30px;
+
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(20px);
+
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.3);
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.25),
+        0 0 20px rgba(255,255,255,0.2);
+
+    color:white;
+}
+
+
+/* ================= TITLE ================= */
+
+.card-title{
+    text-align:center;
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:25px;
+}
+
+
+/* ================= ACTION BUTTONS ================= */
+
+.action-bar{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+
+/* ================= BUTTONS ================= */
+
+.btn-primary{
+    background:linear-gradient(135deg,#00f2fe,#4facfe);
+    padding:10px 18px;
+    border-radius:8px;
+    text-decoration:none;
+    color:white;
+    font-weight:600;
+    border:none;
+}
+
+.btn-secondary{
+    background:linear-gradient(135deg,#ff9966,#ff5e62);
+    padding:10px 18px;
+    border-radius:8px;
+    text-decoration:none;
+    color:white;
+    font-weight:600;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(0,0,0,0.3);
+}
+
+
+/* ================= FILTER SECTION ================= */
+
+.filter-wrapper{
+    margin-bottom:20px;
+
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(6px);
+
+    padding:16px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.15);
+}
+
+
+/* SEARCH BAR */
+
+.filter-search{
+    margin-bottom:12px;
+}
+
+.filter-search input{
+    width:100%;
+    padding:10px;
+
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.4);
+
+    background:rgba(255,255,255,0.1);
+    color:white;
+}
+
+.filter-search input::placeholder{
+    color:rgba(255,255,255,0.8);
+}
+
+
+/* FILTER DROPDOWNS */
+
+.filter-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.filter-row select{
+    padding:10px 12px;
+
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,0.4);
+
+    background:rgba(255,255,255,0.1);
+    color:white;
+
+    min-width:140px;
+}
+
+.filter-row select option{
+    color:black;
+}
+
+
+/* ================= TABLE WRAPPER ================= */
+
+.users-table-wrapper{
+    overflow-x:auto;
+}
+
+
+/* ================= USERS TABLE ================= */
+
+.users-table{
+    width:100%;
+    min-width:1000px;
+    border-collapse:collapse;
+    table-layout:fixed;
+}
+
+
+/* HEADER */
+
+.users-table th{
+    padding:14px 16px;
+    text-align:left;
+
+    font-size:14px;
+    font-weight:600;
+    color:white;
+
+    background:rgba(0,0,0,0.55);
+    border-bottom:2px solid rgba(255,255,255,0.25);
+}
+
+
+/* BODY CELLS */
+
+.users-table td{
+    padding:12px 16px;
+
+    font-size:16px;
+    color:#f1f1f1;
+
+    border-bottom:1px solid rgba(255,255,255,0.15);
+
+    vertical-align:middle;
+
+    word-break:break-word;
+}
+
+
+/* ROW COLORS */
+
+.users-table tbody tr:nth-child(odd){
+    background:rgba(0,0,0,0.18);
+}
+
+.users-table tbody tr:nth-child(even){
+    background:rgba(255,255,255,0.05);
+}
+
+
+/* ROW HOVER */
+
+.users-table tbody tr:hover{
+    background:rgba(0,150,255,0.18);
+}
+
+
+/* COLUMN WIDTHS */
+
+.users-table th:nth-child(1),
+.users-table td:nth-child(1){width:150px;}
+
+.users-table th:nth-child(2),
+.users-table td:nth-child(2){width:140px;}
+
+.users-table th:nth-child(3),
+.users-table td:nth-child(3){width:250px;}
+
+.users-table th:nth-child(4),
+.users-table td:nth-child(4){width:200px;}
+
+.users-table th:nth-child(5),
+.users-table td:nth-child(5){width:150px;}
+
+.users-table th:nth-child(6),
+.users-table td:nth-child(6){width:150px;}
+
+.users-table th:nth-child(7),
+.users-table td:nth-child(7){width:150px;}
+
+.users-table th:nth-child(8),
+.users-table td:nth-child(8){width:90px;}
+
+.users-table th:nth-child(9),
+.users-table td:nth-child(9){width:90px;}
+
+
+/* EMPTY DATA ROW */
+
+.no-data{
+    text-align:center;
+    color:#ddd;
+}
+
+/* ===== FORCE TABLE BACKGROUND RESET ===== */
+
+.users-table,
+.users-table thead,
+.users-table tbody,
+.users-table tr,
+.users-table th,
+.users-table td{
+    background: transparent !important;
+}
+
+
+/* ===== HEADER STYLE ===== */
+
+.users-table th{
+    background: rgba(0,0,0,0.55) !important;
+    color:white;
+}
+
+
+/* ===== ROW COLORS ===== */
+
+.users-table tbody tr:nth-child(odd){
+    background: rgba(0,0,0,0.18) !important;
+}
+
+.users-table tbody tr:nth-child(even){
+    background: rgba(255,255,255,0.05) !important;
+}
+
+
+/* ===== HOVER EFFECT ===== */
+
+.users-table tbody tr:hover{
+    background: rgba(0,150,255,0.18) !important;
+}
+
+.status-true{
+    color:#4CAF50;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.status-false{
+    color:#ff5252;
+    font-size:18px;
+    font-weight:bold;
+}

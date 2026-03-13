@@ -1,15 +1,43 @@
 <!-- templates/admin/admin_dashboard.html -->
 {% extends "base.html" %}
+
 {% block title %}Admin Dashboard{% endblock %}
 
-{% block content %}
-<h1>{{ role|capitalize }} Dashboard</h1>
+{% block body_class %}admin-dashboard-page{% endblock %}
 
-<div class="dashboard-actions">
-    {% if role in ['super_admin', 'state_admin', 'municipal_admin'] %}
-        <a href="{{ url_for('admin.view_users') }}" class="btn btn-primary">View Users</a>
-    {% endif %}
-    <a href="{{ url_for('dashboard.issues_dashboard') }}" class="btn btn-primary">View Issues Dashboard</a>
+{% block content %}
+
+<div class="admin-dashboard-container">
+
+    <div class="admin-card">
+
+        <img src="{{ url_for('static', filename='images/ml.jpeg') }}" 
+             alt="PIRATS Mini Logo" 
+             class="admin-logo">
+
+        <h1 class="admin-title">{{ role|capitalize }} Dashboard</h1>
+
+        <!-- Issues Illustration -->
+        <img src="{{ url_for('static', filename='images/ad.jpeg') }}" 
+             alt="Issues Overview" 
+             class="issues-image">
+
+        <div class="dashboard-actions">
+
+            {% if role in ['super_admin', 'state_admin', 'municipal_admin'] %}
+                <a href="{{ url_for('admin.view_users') }}" class="btn-primary">
+                    Manage Users
+                </a>
+            {% endif %}
+
+            <a href="{{ url_for('dashboard.issues_dashboard') }}" class="btn-secondary">
+                View Issues Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
 </div>
 
 {% endblock %}

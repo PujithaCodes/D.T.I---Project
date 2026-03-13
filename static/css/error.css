@@ -1,0 +1,65 @@
+/* ================= ERROR PAGE BACKGROUND ================= */
+
+.error-page{
+    background: linear-gradient(-45deg,#1d309b,#3d146d,#8d134c,#a7278b);
+    background-size:400% 400%;
+    animation:gradientMove 12s ease infinite;
+}
+
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+/* ================= ERROR LAYOUT ================= */
+
+.error-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:90vh;
+}
+
+
+/* ================= ERROR CARD ================= */
+
+.error-box{
+
+    text-align:center;
+
+    width:420px;
+    padding:40px;
+
+    background:rgba(255,255,255,0.15);
+    backdrop-filter:blur(20px);
+
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.3);
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.25),
+        0 0 20px rgba(255,255,255,0.2);
+
+    color:white;
+}
+
+
+/* ================= ERROR TEXT ================= */
+
+.error-code{
+    font-size:70px;
+    font-weight:700;
+    margin-bottom:10px;
+}
+
+.error-title{
+    font-size:24px;
+    margin-bottom:15px;
+}
+
+.error-message{
+    font-size:15px;
+    margin-bottom:25px;
+    opacity:0.9;
+}

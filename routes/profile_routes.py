@@ -75,7 +75,7 @@ def update_profile():
             flash("Super Admin profile cannot be edited.", "warning")
             return redirect(url_for("profile.profile_page"))
         # Role-based location updates
-        if role in ["citizen", "state_admin","municipal_admin"]:
+        if role in ["citizen", "state_admin","municipal_admin","department_admin"]:
             state_id = request.form.get("state_id") or None
 
         if role in ["citizen", "municipal_admin"]:

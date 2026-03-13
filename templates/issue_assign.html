@@ -1,35 +1,44 @@
 <!-- templates/issue_assign.html -->
 {% extends "base.html" %}
+
+{% block body_class %}issue-assign-page{% endblock %}
+
 {% block content %}
 
-<div class="center-page">
-<div class = "auth-card">
-<h2>Assign Issue</h2>
+<div class="page-container">
+<div class="card-container">
 
-<p><strong>Issue:</strong> {{ issue.title }}</p>
+<h2 class="card-title">Assign Issue</h2>
 
-<form method="POST">
+<p class="issue-info"><strong>Issue:</strong> {{ issue.title }}</p>
 
-    <label for="department">Assign to Department</label>
-    <select name="department_id" id="department" required>
+<form method="POST" class="form-container">
+
+    <label for="department" class="form-label">Assign to Department</label>
+    <select name="department_id" id="department" class="form-input" required>
         {% for dept in departments %}
         <option value="{{ dept.department_id }}">{{ dept.name }}</option>
         {% endfor %}
     </select>
 
-    <label for="deadline">Deadline</label>
+    <label for="deadline" class="form-label">Deadline</label>
     <input type="datetime-local" name="deadline" id="deadline" 
+        class="form-input"
         min="{{ min_deadline }}" required>
 
-    <label for="remarks">Remarks</label>
-    <textarea name="remarks" id="remarks" rows="3"></textarea>
+    <label for="remarks" class="form-label">Remarks</label>
+    <textarea name="remarks" id="remarks" rows="3" class="form-input"></textarea>
 
-    <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Assign Issue</button>
+    <div class="form-buttons">
+        <button type="submit" class="btn-primary">Assign Issue</button>
+        <a href="{{ url_for('issues.issue_detail', issue_id=issue.issue_id) }}" class="btn-secondary">
+            ⬅ Back to Issue
+        </a>
     </div>
+
 </form>
-        <a href="{{ url_for('issues.issue_detail', issue_id=issue.issue_id) }}" class="btn btn-primary">⬅ Back to Issue</a>
 
 </div>
 </div>
+
 {% endblock %}

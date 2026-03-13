@@ -1,45 +1,66 @@
 {% extends "base.html" %}
+
+{% block body_class %}issue-create-page{% endblock %}
+
 {% block content %}
 
-<div class="center-page">
-    <div class="auth-card">
-        <h2>Report Public Issue</h2>
+<div class="issue-create-wrapper">
+
+    <div class="issue-create-card">
+
+        <h2 class="issue-create-title">Report Public Issue</h2>
 
         {% if similar_issues %}
-        <div class="similar-issues-box">
-            <h4>📍 Recent Issues In Your Area</h4>
-            <p class="similar-note">
+        <div class="issue-create-similar-box">
+
+            <h4 class="issue-create-similar-title">
+                📍 Recent Issues In Your Area
+            </h4>
+
+            <p class="issue-create-note">
                 Someone may have already reported a similar issue.
                 You can support existing issues from the Dashboard.
             </p>
 
-            <ul class="similar-issues-list">
+            <ul class="issue-create-similar-list">
                 {% for issue in similar_issues %}
-                <li>
-                    <strong> - {{ issue.title }}</strong>
-                    <span class="status">({{ issue.current_status }})</span>
-                    <span class="support-count">👍 {{ issue.support_count }}</span>
+                <li class="issue-create-similar-item">
+
+                    <strong>{{ issue.title }}</strong>
+
+                    <span class="issue-create-status">
+                        ({{ issue.current_status }})
+                    </span>
+
+                    <span class="issue-create-support">
+                        👍 {{ issue.support_count }}
+                    </span>
+
                 </li>
                 {% endfor %}
             </ul>
+
         </div>
         {% endif %}
 
-        <form method="POST" enctype="multipart/form-data">
 
-            <div class="form-group">
+        <form method="POST" enctype="multipart/form-data" class="issue-create-form">
+
+            <div class="issue-create-group">
                 <label>Title</label>
                 <input type="text" name="title" required>
             </div>
 
-            <div class="form-group">
+            <div class="issue-create-group">
                 <label>Description</label>
                 <textarea name="description" required></textarea>
             </div>
 
-            <div class="form-group">
+            <div class="issue-create-group">
                 <label>Category</label>
+
                 <select name="category" required>
+
                     <option value="">Select Category</option>
                     <option value="Road">Road</option>
                     <option value="Garbage">Garbage</option>
@@ -47,15 +68,17 @@
                     <option value="Electricity">Electricity</option>
                     <option value="Health">Health</option>
                     <option value="Other">Other</option>
+
                 </select>
+
             </div>
 
-            <div class="form-group">
+            <div class="issue-create-group">
                 <label>Upload Images (optional)</label>
                 <input type="file" name="images" multiple>
             </div>
 
-            <div class="form-actions">
+            <div class="issue-create-actions">
                 <button type="submit" class="btn btn-primary">
                     Submit Issue
                 </button>
@@ -63,11 +86,14 @@
 
         </form>
 
-        <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-primary">
+
+        <a href="{{ url_for('dashboard.dashboard') }}"
+           class="btn btn-primary issue-create-back">
             ⬅ Back to Dashboard
         </a>
 
     </div>
+
 </div>
 
 {% endblock %}

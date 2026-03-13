@@ -1,70 +1,76 @@
 {% extends "base.html" %}
+
+{% block body_class %}profile-page{% endblock %}
+
 {% block title %}My Profile{% endblock %}
 
 {% block content %}
-<h2>My Profile</h2>
 
-    <tr><table class="profile-table" border="1" cellpadding="5" cellspacing="0">
+<div class="profile-container">
 
-        <th>Name</th>
-        <td>{{ user.name }}</td>
-    </tr>
-    <tr>
-        <th>Mobile</th>
-        <td>{{ user.mobile }}</td>
-    </tr>
-    <tr>
-        <th>E-mail</th>
-        <td>{{ user.email }}</td>
-    </tr>
-    <!-- <tr>
-        <th>Verified</th>
-        <td>{% if user.verified %}✅ Verified{% else %}❌ Not Verified{% endif %}</td>
-    </tr> -->
+    <div class="profile-card">
 
-    {% if user.role in ['citizen', 'state_admin', 'city_admin', 'ward_admin'] %}
-    <tr>
-        <th>State</th>
-        <td>{{ user.state_name or '-' }}</td>
-    </tr>
-    {% endif %}
+        <h2 class="profile-title">My Profile</h2>
 
-    {% if user.role in ['citizen', 'city_admin', 'ward_admin'] %}
-    <tr>
-        <th>City</th>
-        <td>{{ user.city_name or '-' }}</td>
-    </tr>
-    {% endif %}
+        <table class="profile-table">
 
-    {% if user.role in ['citizen', 'ward_admin'] %}
-    <tr>
-        <th>Ward</th>
-        <td>{{ user.ward_name or '-' }}</td>
-    </tr>
-    {% endif %}
+            <tr>
+                <th>Name</th>
+                <td>{{ user.name }}</td>
+            </tr>
 
-    <!-- <tr>
-        <th>Account Created</th>
-        <td>{{ user.created_at }}</td>
-    </tr> -->
-</table>
+            <tr>
+                <th>Mobile</th>
+                <td>{{ user.mobile }}</td>
+            </tr>
 
+            <tr>
+                <th>E-mail</th>
+                <td>{{ user.email }}</td>
+            </tr>
 
-<div class="profile-actions">
+            {% if user.role in ['citizen', 'state_admin', 'municipal_admin', 'department_admin','field_staff','facilitator'] %}
+            <tr>
+                <th>State</th>
+                <td>{{ user.state_name or '-' }}</td>
+            </tr>
+            {% endif %}
 
-    {% if user.role != 'super_admin' %}
-        <a href="{{ url_for('profile.update_profile') }}" class="btn btn-primary">
-            ✏️ Edit Profile
-        </a>
-    {% endif %}
+            {% if user.role in ['citizen', 'municipal_admin', 'department_admin','field_staff','facilitator'] %}
+            <tr>
+                <th>City</th>
+                <td>{{ user.city_name or '-' }}</td>
+            </tr>
+            {% endif %}
 
-    <a href="{{ url_for('auth.profile_reset_password') }}" class="btn btn-primary">
-        🔒 Change Password
-    </a>
+            {% if user.role in ['citizen','facilitator'] %}
+            <tr>
+                <th>Ward</th>
+                <td>{{ user.ward_name or '-' }}</td>
+            </tr>
+            {% endif %}
 
-    <a href="{{ url_for('dashboard.dashboard') }}" class="btn btn-primary">
-        🏠 Back to Dashboard
-    </a>
+        </table>
+
+        <div class="profile-actions">
+
+            {% if user.role != 'super_admin' %}
+            <a href="{{ url_for('profile.update_profile') }}" class="btn-primary">
+                ✏️ Edit Profile
+            </a>
+            {% endif %}
+
+            <a href="{{ url_for('auth.profile_reset_password') }}" class="btn-primary">
+                🔒 Change Password
+            </a>
+
+            <a href="{{ url_for('dashboard.dashboard') }}" class="btn-secondary">
+                🏠 Back to Dashboard
+            </a>
+
+        </div>
+
+    </div>
 
 </div>
 

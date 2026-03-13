@@ -1,0 +1,200 @@
+/* ================= PAGE BACKGROUND ================= */
+
+.create-user-page{
+    background: linear-gradient(-45deg,#1d309b,#3d146d,#8d134c,#a7278b);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
+}
+
+/* Gradient animation */
+
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+
+/* ================= PAGE LAYOUT ================= */
+
+.page-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:90vh;
+}
+
+
+/* ================= GLASS CARD ================= */
+
+.card-container{
+
+    width:550px;
+    padding:35px;
+
+    background:rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.3);
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.25),
+        0 0 20px rgba(255,255,255,0.2);
+
+    color:white;
+
+    transition:0.35s;
+}
+
+.card-container:hover{
+    transform:translateY(-6px) scale(1.01);
+}
+
+
+/* ================= TITLE ================= */
+
+.card-title{
+    text-align:center;
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:25px;
+    letter-spacing:1px;
+}
+
+
+/* ================= FORM STRUCTURE ================= */
+
+.form-container{
+    display:flex;
+    flex-direction:column;
+}
+
+.form-field{
+    display:flex;
+    flex-direction:column;
+    margin-top:15px;
+    
+}
+
+
+
+/* ================= LABELS ================= */
+
+.form-label{
+    font-weight:600;
+}
+
+
+/* ================= INPUTS ================= */
+
+.form-input{
+
+    margin-top:6px;
+    padding:11px;
+
+    border-radius:8px;
+    border:1px solid whitesmoke;
+
+    background:rgba(255,255,255,0.1);
+    color:white;
+
+    font-size:14px;
+
+    transition:0.25s;
+}
+
+
+/* Input focus glow */
+
+.form-input:focus{
+    outline:none;
+    transform:scale(1.02);
+    box-shadow:0 0 10px rgba(255,255,255,0.7);
+}
+
+
+/* ================= SELECT FIX ================= */
+
+select.form-input{
+    background:transparent;
+    color:white;
+}
+
+select.form-input option{
+    color:black;
+}
+
+
+/* ================= DISABLED INPUT ================= */
+
+input:disabled{
+    opacity:0.8;
+}
+
+
+/* ================= BUTTONS ================= */
+
+.form-buttons{
+    margin-top:25px;
+    display:flex;
+    justify-content:space-between;
+}
+
+
+/* Primary button */
+
+.btn-primary{
+
+    background:linear-gradient(135deg,#00f2fe,#4facfe);
+    color:white;
+
+    padding:11px 20px;
+    border-radius:8px;
+    border:none;
+
+    font-weight:600;
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+.btn-primary:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 25px rgba(0,242,254,0.6);
+}
+
+
+/* Secondary button */
+
+.btn-secondary{
+
+    background:linear-gradient(135deg,#ff9966,#ff5e62);
+    color:white;
+
+    padding:11px 20px;
+    border-radius:8px;
+
+    text-decoration:none;
+    font-weight:600;
+
+    transition:0.3s;
+}
+
+.btn-secondary:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 25px rgba(255,94,98,0.6);
+}
+
+.form-input::placeholder{
+    color:white;
+    opacity:1;
+}
+
+.form-input::-webkit-input-placeholder{
+    color:white;
+}
+
+.form-input:-ms-input-placeholder{
+    color:white;
+}

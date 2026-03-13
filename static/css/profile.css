@@ -1,0 +1,175 @@
+/* ================= PAGE BACKGROUND ================= */
+
+.profile-page{
+    background: linear-gradient(-45deg,#141e30,#243b55,#2b5876,#4e4376);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
+}
+
+
+/* Gradient animation */
+
+@keyframes gradientMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+
+/* ================= PAGE LAYOUT ================= */
+
+.profile-container{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:90vh;
+}
+
+
+/* ================= GLASS CARD ================= */
+
+.profile-card{
+
+    width:520px;
+    padding:35px;
+
+    background:rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+
+    border-radius:16px;
+    border:1px solid rgba(255,255,255,0.3);
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.25),
+        0 0 20px rgba(255,255,255,0.2);
+
+    color:white;
+
+    transition:0.35s;
+}
+
+.profile-card:hover{
+    transform:translateY(-6px) scale(1.01);
+}
+
+
+/* ================= TITLE ================= */
+
+.profile-title{
+    text-align:center;
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:25px;
+    letter-spacing:1px;
+}
+
+
+/* ================= PROFILE TABLE ================= */
+
+
+.profile-table{
+    width:100%;
+    border-collapse:collapse;
+    border:1px solid rgba(255,255,255,0.2);   /* outer border */
+}
+
+.profile-table th,
+.profile-table td{
+    padding:12px;
+    border:1px solid rgba(255,255,255,0.2);   /* cell borders */
+}
+
+.profile-table th{
+    text-align:left;
+    width:40%;
+    font-weight:600;
+}
+
+.profile-table tr{
+    border-bottom:1px solid rgba(255,255,255,0.2);
+}
+
+.profile-table th{
+    
+    text-align:left;
+    padding:12px;
+    width:40%;
+
+    font-weight:600;
+}
+
+.profile-table td{
+    padding:12px;
+}
+
+
+/* ================= PROFILE ACTION BUTTONS ================= */
+
+.profile-actions{
+
+    margin-top:25px;
+
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+
+    gap:10px;
+}
+
+.profile-actions a{
+    text-decoration:none;
+}
+
+
+/* ================= BUTTONS ================= */
+
+.btn-primary{
+
+    background:linear-gradient(135deg,#3b58da,#4facfe);
+    color:white;
+
+    padding:11px 20px;
+    border-radius:8px;
+    border:none;
+
+    font-weight:600;
+    cursor:pointer;
+
+    transition:0.3s;
+}
+
+.btn-primary:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 25px rgba(0,242,254,0.6);
+}
+
+
+.btn-secondary{
+
+    background:linear-gradient(125deg,#ec814b,#ec5b5d);
+    color:white;
+
+    padding:11px 20px;
+    border-radius:8px;
+
+    text-decoration:none;
+    font-weight:600;
+
+    transition:0.3s;
+}
+
+.btn-secondary:hover{
+    transform:translateY(-3px);
+    box-shadow:0 8px 25px rgba(255,94,98,0.6);
+}
+
+/* ================= TABLE HOVER FIX ================= */
+
+.profile-table tr:hover{
+    background:transparent;
+}
+
+.profile-table th:hover,
+.profile-table td:hover{
+    background:transparent;
+}

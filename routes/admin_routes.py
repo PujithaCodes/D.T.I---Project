@@ -252,7 +252,7 @@ def get_departments():
                 conn.close()
                 return jsonify({"departments": []})
 
-    elif role == "municipal_admin":
+    elif role in ["municipal_admin", "department_admin"]:
         city_id = profile_city_id
 
     if not city_id:
@@ -310,6 +310,7 @@ def view_users():
 
     profile_state_id = profile.get("state_id")
     profile_city_id = profile.get("city_id")
+    profile_ward_id = profile.get("ward_id")
 
     # ---- BASE QUERY ----
     query = """
@@ -361,7 +362,8 @@ def view_users():
         role=current_role,
         profile_location={
             "state_id": profile_state_id,
-            "city_id": profile_city_id
+            "city_id": profile_city_id,
+            "ward_id": profile_ward_id
         }
     )
 

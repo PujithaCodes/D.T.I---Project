@@ -215,7 +215,7 @@ config.py
 
 # Flask runtime uploads
 static/uploads/
-
+static/images/
 # Flask instance data (extra safety)
 instance/
 

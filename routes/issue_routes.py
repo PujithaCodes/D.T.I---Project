@@ -197,7 +197,7 @@ def issue_detail(issue_id):
 # -----------------------------
 @issue_bp.route("/<int:issue_id>/update", methods=["POST"])
 @login_required
-@role_required("department_admin", "field_staff", "municipal_admin")
+@role_required("department_admin", "field_staff")
 def update_issue_status(issue_id):
     user_id = session["user_id"]
     role = session["role"]

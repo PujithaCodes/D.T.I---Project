@@ -1,42 +1,42 @@
 {% extends "base.html" %}
+
+{% block body_class %}auth-page{% endblock %}
+
 {% block title %}Update Profile{% endblock %}
 
 {% block content %}
-<div class="center-page">
+
+<div class="auth-container">
+
     <div class="auth-card">
 
-        <h1>Update Profile</h1>
-
+        <h2 class="auth-title">Update Profile</h2>
 
         <form method="POST">
 
-            <div class="form-group">
             <!-- BASIC INFO -->
-                <label>Name:</label>
-                <input type="text" name="name" value="{{ user.name }}" required>
+
+            <div class="form-group">
+                <input type="text" name="name" value="{{ user.name }}" placeholder="Full Name" required>
             </div>
 
             <div class="form-group">
-                <label>Email:</label>
-                <input type="email" name="email" value="{{ user.email }}">
+                <input type="email" name="email" value="{{ user.email }}" placeholder="Email">
             </div>
 
             <div class="form-group">
-                <label>Mobile:</label>
-                <input type="text" value="{{ user.mobile }}" readonly>
+                <input type="text" value="{{ user.mobile }}" readonly placeholder="Mobile Number">
             </div>
 
-            <!-- ================= LOCATION SECTION ================= -->
+            <!-- ================= LOCATION ================= -->
 
-            <!-- STATE (state_admin, municipal_admin, citizen) -->
-            {% if user.role in ['state_admin', 'municipal_admin', 'citizen'] %}
+            {% if user.role in ['state_admin', 'municipal_admin', 'department_admin','field_staff','facilitator','citizen'] %}
             <div class="form-group">
-                <label>State:</label>
                 <select id="state_id" name="state_id">
                     <option value="">Select State</option>
                     {% for s in states %}
                         <option value="{{ s.state_id }}"
-                            {% if s.state_id == user.state_id %}selected{% endif %}>
+                        {% if s.state_id == user.state_id %}selected{% endif %}>
                             {{ s.name }}
                         </option>
                     {% endfor %}
@@ -45,10 +45,8 @@
             {% endif %}
 
 
-            <!-- CITY (municipal_admin, citizen) -->
-            {% if user.role in ['municipal_admin', 'citizen'] %}
+            {% if user.role in ['municipal_admin','department_admin','field_staff','facilitator','citizen'] %}
             <div class="form-group">
-                <label>City:</label>
                 <select id="city_id" name="city_id"
                         data-selected="{{ user.city_id }}">
                     <option value="">Select City</option>
@@ -57,10 +55,8 @@
             {% endif %}
 
 
-            <!-- WARD (citizen only) -->
-            {% if user.role == 'citizen' %}
+            {% if user.role in ['citizen','facilitator'] %}
             <div class="form-group">
-                <label>Ward:</label>
                 <select id="ward_id" name="ward_id"
                         data-selected="{{ user.ward_id }}">
                     <option value="">Select Ward</option>
@@ -68,14 +64,27 @@
             </div>
             {% endif %}
 
+
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="submit" class="btn-primary">
+                    💾 Update Profile
+                </button>
             </div>
+
         </form>
 
-        <a href="{{ url_for('profile.profile_page') }}" class="btn btn-primary">Back to Profile</a>
+        <div class="auth-links">
+            <a href="{{ url_for('profile.profile_page') }}" class="btn-outline">
+                ⬅ Back to Profile
+            </a>
+        </div>
+
     </div>
+
 </div>
+
+<!-- ================= JS (UNCHANGED) ================= -->
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -83,10 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const city  = document.getElementById("city_id");
     const ward  = document.getElementById("ward_id");
 
-    // If no state field exists (super_admin), exit safely
     if (!state) return;
 
     function loadCities(selectedState, selectedCity=null) {
+
         if (!selectedState || !city) return;
 
         city.innerHTML = "<option value=''>Select City</option>";
@@ -95,12 +104,14 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(`/profile/api/cities?state_id=${selectedState}`)
             .then(r => r.json())
             .then(d => {
+
                 d.cities.forEach(c => {
                     city.innerHTML += `<option value="${c.city_id}">${c.name}</option>`;
                 });
 
                 if (selectedCity) {
                     city.value = selectedCity;
+
                     if (ward) {
                         loadWards(selectedCity, ward.getAttribute("data-selected"));
                     }
@@ -109,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadWards(selectedCity, selectedWard=null) {
+
         if (!selectedCity || !ward) return;
 
         ward.innerHTML = "<option value=''>Select Ward</option>";
@@ -116,6 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(`/profile/api/wards?city_id=${selectedCity}`)
             .then(r => r.json())
             .then(d => {
+
                 d.wards.forEach(w => {
                     ward.innerHTML += `<option value="${w.ward_id}">${w.name}</option>`;
                 });
@@ -124,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
-    // Initial Load
     if (state.value) {
         loadCities(state.value, city?.getAttribute("data-selected"));
     }
@@ -138,6 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
             loadWards(city.value);
         });
     }
+
 });
 </script>
 

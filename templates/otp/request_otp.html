@@ -1,15 +1,20 @@
-<!-- templates/otp/request_otp.html -->
 {% extends "base.html" %}
+
+{% block body_class %}auth-page{% endblock %}
+
 {% block title %}Request OTP{% endblock %}
 
 {% block content %}
-<div class="center-page">
+
+<div class="auth-container">
+
     <div class="auth-card">
-        <h2>Request OTP</h2>
+
+        <h2 class="auth-title">Request OTP</h2>
 
         <form method="POST" action="{{ url_for('otp_bp.request_otp') }}">
+
             <div class="form-group">
-                <label>Mobile Number:</label>
                 <input 
                     type="tel"
                     name="mobile"
@@ -19,14 +24,28 @@
                     oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                     required>
             </div>
+
             <div class="form-actions">
-                <button type="submit" class="btn btn-primary">Send OTP</button>
+                <button type="submit" class="btn-primary">
+                    📩 Send OTP
+                </button>
             </div>
+
         </form>
 
-        <p>
-            Already have an account? <a href="{{ url_for('otp_bp.verify_otp') }}" class="btn btn-outline">Verify OTP</a>
-        </p>
+        <div class="auth-links">
+
+            <p>
+                Already received an OTP?
+                <a href="{{ url_for('otp_bp.verify_otp') }}" class="btn-outline">
+                    Verify OTP
+                </a>
+            </p>
+
+        </div>
+
     </div>
+
 </div>
+
 {% endblock %}

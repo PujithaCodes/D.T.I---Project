@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 
+{% block body_class %}dashboard-page{% endblock %}
+
 {% block content %}
 
 <div class="dashboard-wrapper">
@@ -16,9 +18,9 @@
                 </a>
             {% endif %}
 
-            <a href="{{ url_for('dashboard.issues_dashboard') }}" class="btn btn-primary">
+            <!-- <a href="{{ url_for('dashboard.issues_dashboard') }}" class="btn btn-primary">
                 📋 View All Issues
-            </a>
+            </a> -->
 
             {% if role in ['super_admin','state_admin','municipal_admin'] %}
                 <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-primary">
@@ -29,6 +31,7 @@
     </div>
 
 
+    {% if role in ['super_admin','state_admin','municipal_admin'] %}
     <!-- ================= STATS ================= -->
     <div class="card">
         <h3>Statistics Overview</h3>
@@ -48,10 +51,14 @@
     <div class="card chart-card">
         <canvas id="issuesChart"></canvas>
     </div>
-
+    {% endif %}
 
     <!-- ================= PROFILE WARNING ================= -->
-    {% if (not profile_location or not profile_location.state_id or not profile_location.city_id) and role != 'super_admin' %}
+    {% if (not profile_location or not profile_location.state_id or 
+        (not profile_location.city_id and role !='state_admin') or
+        (not profile_location.ward_id and role != 'state_admin' and role != 'municipal_admin'
+        and role != 'department_admin' and role != 'field_staff'))
+        and role != 'super_admin' %}
     <div class="warning-box">
         ⚠️ Your profile location is incomplete.
         <a href="{{ url_for('profile.update_profile') }}" class="btn btn-outline">
@@ -92,7 +99,7 @@
             </select>
             {% endif %}
 
-            {% if role in ['super_admin','state_admin','municipal_admin','department_admin','Facilitator'] %}
+            {% if role in ['super_admin','state_admin','municipal_admin','department_admin','facilitator'] %}
             <select id="department_filter">
                 <option value="">Department</option>
             </select>
@@ -151,14 +158,18 @@
                         {% for issue in issues %}
                         <tr>
                             <td>{{ issue.title }}</td>
-                            <td>{{ issue.status }}</td>
+                            <td>
+                                <span class="status-badge status-{{ issue.status|replace(' ','-') }}">
+                                    {{ issue.status }}
+                                </span>
+                            </td>
                             <td>{{ issue.ward_name or '-' }}</td>
                             <td>{{ issue.city_name or '-' }}</td>
                             <td>{{ issue.state_name or '-' }}</td>
                             <td>{{ issue.deadline or '-' }}</td>
                             <td>
                                 <a href="{{ url_for('issues.issue_detail', issue_id=issue.issue_id) }}"
-                                   class="btn btn-sm">
+                                   class="btn btn-primary">
                                     View
                                 </a>
                             </td>
@@ -185,11 +196,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script id="stats-data" type="application/json">
+{{ stats | tojson }}
+</script>
+
 <script>
 const PROFILE = {
     state_id: "{{ profile_location.state_id or '' }}",
     city_id:  "{{ profile_location.city_id or '' }}",
-    ward_id:  "{{ profile_location.ward_id or '' }}"
+    ward_id:  "{{ profile_location.ward_id or '' }}",
+    department_id: "{{ profile_location.department_id or '' }}"
 };
 const TODAY = "{{ today }}";
 
@@ -206,40 +222,57 @@ document.addEventListener("DOMContentLoaded", () => {
     const tableBody = document.getElementById("issues_table");
     const overdueCheckbox = document.getElementById("overdue_only");
     const viewAllBtn = document.getElementById("view_all_issues");
-
+    const statsData = JSON.parse(
+    document.getElementById("stats-data").textContent
+);
     if (endDateInput) endDateInput.max = TODAY;
 
 
-const statsData = {{ stats | default({}) | tojson }};
+let issuesChart = null;
 
-
-const ctx = document.getElementById('issuesChart');
+const ctx = document.getElementById("issuesChart");
 
 if (ctx) {
-    new Chart(ctx, {
-        type: 'bar',
+
+    issuesChart = new Chart(ctx, {
+        type: "bar",
         data: {
-            labels: ['Reported','Assigned','In Progress','In Review','Resolved','Rejected','Overdue'],
+            labels: [
+                "Reported",
+                "Assigned",
+                "In Progress",
+                "In Review",
+                "Resolved",
+                "Rejected",
+                "Overdue"
+            ],
             datasets: [{
                 data: [
-                    statsData['Reported'] || 0,
-                    statsData['Assigned'] || 0,
-                    statsData['In Progress'] || 0,
-                    statsData['In Review'] || 0,
-                    statsData['Resolved'] || 0,
-                    statsData['Rejected'] || 0,
-                    statsData['Overdue'] || 0
+                    statsData["Reported"] || 0,
+                    statsData["Assigned"] || 0,
+                    statsData["In Progress"] || 0,
+                    statsData["In Review"] || 0,
+                    statsData["Resolved"] || 0,
+                    statsData["Rejected"] || 0,
+                    statsData["Overdue"] || 0
                 ],
-                backgroundColor: '#4f6bed'
+                backgroundColor: "#4f6bed"
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true } }
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
         }
     });
+
 }
 
     function validateDates() {
@@ -354,7 +387,11 @@ if (ctx) {
                         tableBody.innerHTML += `
                             <tr>
                                 <td>${issue.title}</td>
-                                <td>${issue.status}</td>
+                                <td>
+                                    <span class="status-badge status-${issue.status.replace(/\s/g,'-')}">
+                                        ${issue.status}
+                                    </span>
+                                </td>
                                 <td>${issue.ward_name || '-'}</td>
                                 <td>${issue.city_name || '-'}</td>
                                 <td>${issue.state_name || '-'}</td>
@@ -368,9 +405,9 @@ if (ctx) {
                     });
 
                 
+                }
                 updateStatsCards(data.stats);
                 updateChart(data.stats);
-                }
             });
     }
     let searchTimeout = null;
@@ -427,30 +464,73 @@ if (ctx) {
         if(!cityInput) return; cityInput.innerHTML="<option value=''>City</option>"; if(wardInput) wardInput.innerHTML="<option value=''>Ward</option>"; if(deptInput) deptInput.innerHTML="<option value=''>Department</option>";
         fetch(`/admin/get_cities?state_id=${stateId}`).then(r=>r.json()).then(data=>{
             data.cities.forEach(c => cityInput.innerHTML+=`<option value="${c.city_id}">${c.name}</option>`);
-            if(PROFILE.city_id) { cityInput.value=PROFILE.city_id; loadWards(PROFILE.city_id); loadDepartments(PROFILE.city_id); }
+            if(PROFILE.city_id) 
+            { 
+                cityInput.value=PROFILE.city_id; loadWards(PROFILE.city_id); 
+                loadDepartments(PROFILE.city_id); 
+            }
             loadIssues();
         });
     }
 
     function loadWards(cityId){
-        if(!wardInput) return; wardInput.innerHTML="<option value=''>Ward</option>";
-        fetch(`/admin/get_wards?city_id=${cityId}`).then(r=>r.json()).then(data=>{
-            data.wards.forEach(w => wardInput.innerHTML+=`<option value="${w.ward_id}">${w.name}</option>`);
-            if(PROFILE.ward_id) wardInput.value=PROFILE.ward_id;
-        });
-    }
+        if(!wardInput) return;
+        wardInput.innerHTML="<option value=''>Ward</option>";
+        fetch(`/admin/get_wards?city_id=${cityId}`)
+        .then(r=>r.json())
+        .then(data=>{
+            data.wards.forEach(w =>
+                wardInput.innerHTML+=`<option value="${w.ward_id}">${w.name}</option>`
+                );  
+
+                if(PROFILE.ward_id) wardInput.value=PROFILE.ward_id;
+
+                loadIssues();   // 🔥 ADD THIS
+            });
+        }
 
     function loadDepartments(cityId){
-        if(!deptInput) return; deptInput.innerHTML="<option value=''>Department</option>";
-        fetch(`/admin/get_departments?city_id=${cityId}`).then(r=>r.json()).then(data=>{
-            data.departments.forEach(dep => deptInput.innerHTML+=`<option value="${dep.department_id}">${dep.name}</option>`);
-        });
+
+        if (!deptInput) return;
+
+        deptInput.innerHTML = "<option value=''>Department</option>";
+
+        if (!cityId) return;
+
+        fetch(`/admin/get_departments?city_id=${cityId}`)
+            .then(res => res.json())
+            .then(data => {
+
+                if (!data.departments) return;
+
+                data.departments.forEach(dep => {
+
+                    const option = document.createElement("option");
+                    option.value = dep.department_id;
+                    option.textContent = dep.name;
+
+                    deptInput.appendChild(option);
+                });
+
+            })
+            .catch(err => console.error("Department loading failed:", err));
     }
 
     // Initialize filters
-    if(stateInput && PROFILE.state_id) loadCities(PROFILE.state_id);
-    else if(PROFILE.city_id){ loadWards(PROFILE.city_id); loadDepartments(PROFILE.city_id); loadIssues(); }
-    else loadIssues();
+    if (stateInput && PROFILE.state_id) {
+        loadCities(PROFILE.state_id);
+    }
+    else if (cityInput && PROFILE.state_id) {
+        loadCities(PROFILE.state_id); // state_admin
+    }
+    else if (PROFILE.city_id) {
+        loadWards(PROFILE.city_id);
+        loadDepartments(PROFILE.city_id);
+        loadIssues();
+    }
+    else {
+        loadIssues();
+    }
 });
 </script>
 

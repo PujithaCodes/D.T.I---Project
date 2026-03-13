@@ -1,49 +1,47 @@
 {% extends "base.html" %}
 {% block title %}Create User{% endblock %}
 
+{% block body_class %}create-user-page{% endblock %}
+
 {% block content %}
 
-<div class="center-page">
-    <div class="auth-card">
-<h1>Create New User</h1>
+<div class="page-container">
+<div class="card-container">
 
-<form method="POST" id="createUserForm">
+<h2 class="card-title">Create New User</h2>
 
-    <div class="form-group">
-        <!-- Name -->
-        <label>Name:</label>
-        <input type="text" name="name" required>
+<form method="POST" id="createUserForm" class="form-container" >
+
+    <div class="form-field">
+        <label class="form-label" >Name</label>
+        <input type="text" name="name" class="form-input" placeholder="Enter name:(sam)" required>
     </div>
     
-    <div class="form-group">
-        <!-- Email -->
-        <label>Email:</label>
-        <input type="email" name="email">
+    <div class="form-field">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-input" placeholder="Enter email address:(example@gmail.com)" required>
     </div>
 
-    <div class="form-group">
-        <!-- Mobile -->
-        <label>Mobile:</label>
+    <div class="form-field">
+        <label class="form-label">Mobile</label>
         <input 
             type="tel" 
             name="mobile" 
-            placeholder="Enter mobile number" 
+            class="form-input"
+            placeholder="Enter mobile number:(1234567890)" 
             pattern="[0-9]{10}" 
             maxlength="10" 
             required>
     </div>
 
-    <div class="form-group">
-        <!-- Password -->
-        <label>Password:</label>
-        <input type="password" name="password" required>
+    <div class="form-field">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-input" placeholder="Enter password:(********)" required>
     </div>
 
-
-    <div class="form-group">
-        <!-- Role -->
-        <label>Role:</label>
-        <select name="role" required>
+    <div class="form-field">
+        <label class="form-label">Role</label>
+        <select name="role" class="form-input" required>
             {% for r in allowed_roles %}
                 <option value="{{ r }}">{{ r.replace('_',' ').title() }}</option>
             {% endfor %}
@@ -51,11 +49,12 @@
     </div>
 
 <!-- ================= STATE ================= -->
-<div class="form-group">
-<label>State:</label>
+<div class="form-field">
+
+<label class="form-label">State</label>
 
 {% if role == "super_admin" %}
-    <select name="state_id" id="stateSelect" required>
+    <select name="state_id" id="stateSelect" class="form-input" required>
         <option value="" disabled selected>-- Select State --</option>
         {% for state in states %}
             <option value="{{ state.state_id }}">
@@ -65,23 +64,26 @@
     </select>
 
 {% else %}
-    <!-- Fixed State (state_admin & municipal_admin) -->
     <input type="text"
+           class="form-input"
            value="{{ profile_location.state_name }} (Your State)"
            disabled>
+
     <input type="hidden"
            name="state_id"
            value="{{ profile_location.state_id }}">
 {% endif %}
+
 </div>
 
 
-<div class="form-group">
 <!-- ================= CITY ================= -->
-<label>City:</label>
+<div class="form-field">
+
+<label class="form-label">City</label>
 
 {% if role == "super_admin" %}
-    <select name="city_id" id="citySelect" required>
+    <select name="city_id" id="citySelect" class="form-input" required>
         <option value="" disabled selected>-- Select City --</option>
         {% for city in cities %}
             <option value="{{ city.city_id }}"
@@ -92,7 +94,7 @@
     </select>
 
 {% elif role == "state_admin" %}
-    <select name="city_id" id="citySelect" required>
+    <select name="city_id" id="citySelect" class="form-input" required>
         <option value="" disabled selected>-- Select City --</option>
         {% for city in cities %}
             <option value="{{ city.city_id }}">
@@ -102,56 +104,67 @@
     </select>
 
 {% else %}
-    <!-- Fixed City (municipal_admin) -->
     <input type="text"
+           class="form-input"
            value="{{ profile_location.city_name }} (Your City)"
            disabled>
+
     <input type="hidden"
            name="city_id"
            value="{{ profile_location.city_id }}">
 {% endif %}
+
 </div>
 
-<div class="form-group">
+
 <!-- ================= WARD ================= -->
-<label>Ward:</label>
+<div class="form-field">
 
-<select name="ward_id" id="wardSelect" required>
-    <option value="" disabled selected>-- Select Ward --</option>
+<label class="form-label">Ward</label>
 
-    {% if role == "municipal_admin" %}
-        {% for ward in wards %}
-            <option value="{{ ward.ward_id }}">
-                {{ ward.name }}
-            </option>
-        {% endfor %}
-    {% else %}
-        {% for ward in wards %}
-            <option value="{{ ward.ward_id }}"
-                    data-city="{{ ward.city_id }}">
-                {{ ward.name }}
-            </option>
-        {% endfor %}
-    {% endif %}
+<select name="ward_id" id="wardSelect" class="form-input" required>
+
+<option value="" disabled selected>-- Select Ward --</option>
+
+{% if role == "municipal_admin" %}
+    {% for ward in wards %}
+        <option value="{{ ward.ward_id }}">
+            {{ ward.name }}
+        </option>
+    {% endfor %}
+{% else %}
+    {% for ward in wards %}
+        <option value="{{ ward.ward_id }}"
+                data-city="{{ ward.city_id }}">
+            {{ ward.name }}
+        </option>
+    {% endfor %}
+{% endif %}
+
 </select>
+
 </div>
 
-<div class ="from-actions">
-<button type="submit" class="btn btn-primary">Create User</button>
+
+<div class="form-buttons">
+<button type="submit" class="btn-primary">Create User</button>
 </div>
+
 </form>
 
-<a href="{{ url_for('admin.view_users') }}" class="btn btn-primary">
-    ⬅ Back to Users List
-</a>
 
-<!-- ================= JAVASCRIPT ================= -->
+<div class="form-buttons">
+<a href="{{ url_for('admin.view_users') }}" class="btn-secondary">
+⬅ Back to Users List
+</a>
+</div>
+
+
 <script>
 const stateSelect = document.getElementById("stateSelect");
 const citySelect = document.getElementById("citySelect");
 const wardSelect = document.getElementById("wardSelect");
 
-/* Filter cities when state changes (super_admin only) */
 function filterCities() {
     const stateId = stateSelect.value;
     for (let opt of citySelect.options) {
@@ -164,7 +177,6 @@ function filterCities() {
     filterWards();
 }
 
-/* Filter wards when city changes */
 function filterWards() {
     const cityId = citySelect.value;
     for (let opt of wardSelect.options) {
@@ -179,5 +191,8 @@ function filterWards() {
 stateSelect?.addEventListener("change", filterCities);
 citySelect?.addEventListener("change", filterWards);
 </script>
+
+</div>
+</div>
 
 {% endblock %}
