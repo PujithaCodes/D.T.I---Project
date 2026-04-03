@@ -158,14 +158,6 @@
     align-items:center;
 }
 
-.filter-row select,
-.filter-row input[type="date"]{
-    color:white;
-    padding:8px;
-    border-radius:6px;
-    border:none;
-}
-
 .date-group{
     display:flex;
     align-items:center;
@@ -227,7 +219,7 @@
 }
 
 .btn-primary{
-    background:linear-gradient(135deg,#00c6ff,#0072ff);
+    background:linear-gradient(135deg,#3b58da,#4facfe);
     color:white;
 }
 
@@ -280,4 +272,65 @@
 
 .status-Rejected{
     background:#f44336;
+}
+
+
+
+.filter-row input {
+    background:rgba(255,255,255,0.1);
+    color:white;
+}
+
+
+.filter-row input[type="date"]{
+    padding:8px;
+    border-radius:6px;
+    border:none;
+}
+
+
+.filter-row input[type="date"]::-webkit-calendar-picker-indicator{
+    filter: invert(1);
+    opacity: 1.3;
+}
+
+.filter-row input[type="date"]::-webkit-calendar-picker-indicator:hover{
+    opacity: 1.5;
+}
+
+.filter-row select{
+    padding:6px 10px;
+    font-size:15px;
+    height:34px;
+    width:40px;
+    border-radius:8px;
+    border:none;
+    background:rgba(255,255,255,0.2);
+    color:white;
+}
+
+.filter-row select option{
+    background-color:#333;
+    color:white;
+}
+
+.priority-low{
+    background:#3bfa41;
+    text-shadow: #021730 1px 1px 2px;
+    font-style: italic;
+}
+.priority-medium{
+    background:#facd39;
+    text-shadow: #021730 1px 1px 2px;
+    font-style: italic;
+}
+.priority-high{
+    background:#f1aa3e;
+    text-shadow: #021730 1px 1px 2px;
+    font-style: italic;
+}
+.priority-critical{
+    background:#f75b4d;
+    text-shadow: #021730 1px 1px 2px;  
+    font-style: italic;
 }

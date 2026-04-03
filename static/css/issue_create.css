@@ -191,7 +191,8 @@
 /* Select dropdown options */
 
 .issue-create-group select option{
-    color:black;
+    color:rgb(255, 255, 255);
+    background-color: #333;
 }
 
 /* File input field */
@@ -229,3 +230,4 @@
     background: rgba(255,255,255,0.15);
     border-color: white;
 }
+

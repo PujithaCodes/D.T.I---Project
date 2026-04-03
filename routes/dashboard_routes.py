@@ -1,5 +1,6 @@
 # routes/dashboard_routes.py
 from flask import Blueprint, render_template, session, redirect, url_for, request, jsonify, flash
+from utils.priority_engine import calculate_priority
 from utils.db import get_db_connection
 from utils.auth import login_required
 from datetime import date
@@ -67,7 +68,7 @@ def issues_dashboard():
     "city_id": user.get("city_id"),
     "ward_id": user.get("ward_id"),
     "department_id": user.get("department_id")
-}
+    }
 
     # ---------------- STATES ----------------
     cursor.execute("SELECT state_id, name FROM States ORDER BY name")
@@ -120,39 +121,50 @@ def issues_dashboard():
     
     # ---------------- ISSUES QUERY ----------------
     issues_query = f"""
-    SELECT
+        SELECT
+            i.issue_id,
+            i.title,
+            i.category,
+            i.current_status AS status,
+            i.deadline,
+            COUNT(sup.support_id) AS support_count,
+            st.name AS state_name,
+            c.name AS city_name,
+            w.name AS ward_name,
+            i.reported_by,
+            i.created_at
+        FROM Issues i
+        LEFT JOIN Issue_Support sup 
+            ON i.issue_id = sup.issue_id
+        LEFT JOIN States st 
+            ON i.state_id = st.state_id
+        LEFT JOIN Cities c 
+            ON i.city_id = c.city_id
+        LEFT JOIN Wards w 
+            ON i.ward_id = w.ward_id
+        {where}
+        GROUP BY 
         i.issue_id,
         i.title,
-        i.current_status AS status,
+        i.category,
+        i.current_status,
         i.deadline,
-        COUNT(sup.support_id) AS support_count,
-        st.name AS state_name,
-        c.name AS city_name,
-        w.name AS ward_name,
-        i.reported_by
-    FROM Issues i
-    LEFT JOIN Issue_Support sup 
-        ON i.issue_id = sup.issue_id
-    LEFT JOIN States st 
-        ON i.state_id = st.state_id
-    LEFT JOIN Cities c 
-        ON i.city_id = c.city_id
-    LEFT JOIN Wards w 
-        ON i.ward_id = w.ward_id
-    {where}
-    GROUP BY 
-    i.issue_id,
-    i.title,
-    i.current_status,
-    i.deadline,
-    st.name,
-    c.name,
-    w.name,
-    i.reported_by
-    ORDER BY i.created_at ASC
-"""
+        st.name,
+        c.name,
+        w.name,
+        i.reported_by,
+        i.created_at
+    """
     cursor.execute(issues_query, params)
     issues = cursor.fetchall()
+
+    # ---------------- PRIORITY CALCULATION ----------------
+    for issue in issues:
+        score, level = calculate_priority(issue, issue["support_count"])
+        issue["priority_score"] = score
+        issue["priority_level"] = level
+
+    issues.sort(key=lambda x: x["priority_score"], reverse=True)
 
     # ---------------- STATS QUERY (DYNAMIC) ----------------
     stats_query = f"""
@@ -330,6 +342,7 @@ def filter_issues():
     SELECT
         i.issue_id,
         i.title,
+        i.category,
         i.current_status AS status,
         i.deadline,
         COUNT(sup.support_id) AS support_count,
@@ -337,7 +350,8 @@ def filter_issues():
         st.name AS state_name,
         c.name AS city_name,
         w.name AS ward_name,
-        i.reported_by
+        i.reported_by,
+        created_at
     FROM Issues i
     LEFT JOIN Issue_Support sup 
         ON i.issue_id = sup.issue_id
@@ -351,17 +365,25 @@ def filter_issues():
     GROUP BY 
     i.issue_id,
     i.title,
+    i.category,
     i.current_status,
     i.deadline,
     st.name,
     c.name,
     w.name,
-    i.reported_by
+    i.reported_by,
+    created_at
     ORDER BY i.created_at DESC
     """
     cursor.execute(issues_query, params)
     issues = cursor.fetchall()
 
+    # ---------------- PRIORITY CALCULATION ----------------
+    for issue in issues:    
+        score, level = calculate_priority(issue, issue["support_count"])
+        issue["priority_score"] = score
+        issue["priority_level"] = level
+        
     # ---------------- STATS (DYNAMIC) ----------------
     stats_query = f"""
         SELECT
@@ -384,6 +406,8 @@ def filter_issues():
     # ensure no None
     for key in ['Total','Reported','Assigned','In Progress','In Review','Resolved','Rejected','Overdue']:
         stats[key] = stats.get(key) or 0
+    
+    
 
     cursor.close()
     conn.close()

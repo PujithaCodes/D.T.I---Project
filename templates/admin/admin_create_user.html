@@ -25,12 +25,13 @@
     <div class="form-field">
         <label class="form-label">Mobile</label>
         <input 
-            type="tel" 
-            name="mobile" 
-            class="form-input"
-            placeholder="Enter mobile number:(1234567890)" 
-            pattern="[0-9]{10}" 
-            maxlength="10" 
+            type="tel"
+            name="mobile"
+            class ="form-input"
+            placeholder="Enter mobile number"
+            maxlength="10"
+            inputmode="numeric"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')"
             required>
     </div>
 
@@ -147,16 +148,16 @@
 
 
 <div class="form-buttons">
-<button type="submit" class="btn-primary">Create User</button>
+    <button type="submit" class="btn-primary">Create User</button>
 </div>
 
 </form>
 
 
 <div class="form-buttons">
-<a href="{{ url_for('admin.view_users') }}" class="btn-secondary">
-⬅ Back to Users List
-</a>
+    <a href="{{ url_for('admin.view_users') }}" class="btn-secondary">
+        ⬅ Back to Users List
+    </a>
 </div>
 
 

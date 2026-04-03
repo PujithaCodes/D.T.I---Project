@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from utils.db import get_db_connection
 from utils.auth import login_required, role_required
 from werkzeug.utils import secure_filename
+from utils.priority_engine import calculate_priority
 from datetime import datetime, timedelta
 import os
 
@@ -153,10 +154,24 @@ def issue_detail(issue_id):
         WHERE i.issue_id=%s
     """, (issue_id,))
     issue = cursor.fetchone()
+
     if not issue:
         cursor.close()
         conn.close()
         return "Issue not found", 404
+    
+    # ---- PRIORITY CALCULATION ----
+    cursor.execute(
+        "SELECT COUNT(*) as count FROM Issue_Support WHERE issue_id=%s",
+        (issue_id,)
+    )
+    support = cursor.fetchone()
+    support_count = support["count"]
+
+    score, level = calculate_priority(issue, support_count)
+
+    issue["priority_score"] = score
+    issue["priority_level"] = level
 
     # Fetch status timeline
     cursor.execute("""

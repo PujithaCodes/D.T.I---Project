@@ -31,6 +31,17 @@
     <div class="issue-detail-card">
         <h3 class="issue-section-title">Description</h3>
         <p>{{ issue.description }}</p>
+        <div class="priority-box">
+            <strong>Priority:</strong>
+            <span class="priority-badge {{ issue.priority_level }}">
+                {{ issue.priority_level }}
+            </span>
+            {%if session.role in ['super_admin','state_admin','municipal_admin', 'department_admin', 'field_staff', 'facilitator'] %}
+                <span class="priority-score">
+                    (Score: {{ issue.priority_score }})
+                </span>
+            {% endif %}
+        </div>
     </div>
 
 
@@ -151,9 +162,13 @@
 
 
     <!-- ================= UPDATE STATUS ================= -->
-    {% if session.role in ['department_admin', 'field_staff']
-          and issue.current_status not in ['Reported', 'Resolved', 'Rejected']
-          and not issue.is_closed %}
+        {% if (session.role == 'department_admin'
+      and issue.current_status not in ['Reported','In Review','Resolved','Rejected']
+      and not issue.is_closed)
+   or
+      (session.role == 'field_staff'
+      and issue.current_status not in ['Reported','In Progress','Resolved','Rejected']
+      and not issue.is_closed) %}
 
     <div class="issue-detail-card">
         <h3>Update Status</h3>
