@@ -151,9 +151,13 @@
 
 
     <!-- ================= UPDATE STATUS ================= -->
-    {% if session.role in ['department_admin', 'field_staff']
-          and issue.current_status not in ['Reported', 'Resolved', 'Rejected']
-          and not issue.is_closed %}
+    {% if (session.role == 'department_admin'
+      and issue.current_status not in ['Reported','In Review','Resolved','Rejected']
+      and not issue.is_closed)
+   or
+      (session.role == 'field_staff'
+      and issue.current_status not in ['Reported','In Progress','Resolved','Rejected']
+      and not issue.is_closed) %}
 
     <div class="issue-detail-card">
         <h3>Update Status</h3>
