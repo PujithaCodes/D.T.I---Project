@@ -72,6 +72,16 @@
         </select>
         {% endif %}
 
+        <select id="assisted_filter">
+            <option value="">All Citizens</option>
+            <option value="1">✔ Assisted</option>
+            <option value="0">✖ Self Signup</option>
+        </select>
+
+        <button id="clear_filters" class="btn btn-secondary">
+            ❌ Clear Filters
+        </button>
+
     </div>
 </div>
 
@@ -150,6 +160,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const city   = document.getElementById("city_filter");
     const ward   = document.getElementById("ward_filter");
     const search = document.getElementById("search_input");
+    const assisted = document.getElementById("assisted_filter");
+    const clearBtn = document.getElementById("clear_filters");
     const table  = document.getElementById("users_table");
 
     // ---------- LOAD USERS ----------
@@ -159,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
         city?.value  && params.append("city_id", city.value);
         ward?.value  && params.append("ward_id", ward.value);
         search.value.trim() && params.append("search", search.value.trim());
+        assisted?.value !== "" && params.append("assisted", assisted.value);
 
         fetch(`/admin/users/filter?${params.toString()}`)
             .then(r => r.json())
@@ -282,10 +295,42 @@ document.addEventListener("DOMContentLoaded", () => {
 
         loadUsers();
     }
-
 });
-    ward?.addEventListener("change", loadUsers);
-    search.addEventListener("input", loadUsers);
+
+ward?.addEventListener("change", loadUsers);
+search.addEventListener("input", loadUsers);
+assisted.addEventListener("change", loadUsers);
+
+    
+
+    clearBtn?.addEventListener("click", () => {
+
+    // Reset all filters
+    if (state) state.value = "";
+    if (city) city.value = "";
+    if (ward) ward.value = "";
+    if (assisted) assisted.value = "";
+    search.value = "";
+
+    // ---------- ROLE-AWARE RESET ----------
+    
+    if (state) {
+        // SUPER ADMIN
+        city.innerHTML = "<option value=''>City</option>";
+        ward.innerHTML = "<option value=''>Ward</option>";
+        loadUsers();
+    }
+    else if (city) {
+        // STATE ADMIN
+        loadCities(PROFILE.state_id);   // reload cities
+    }
+    else if (ward) {
+        // MUNICIPAL ADMIN
+        loadWards(PROFILE.city_id);    // reload wards
+    }
+    else {
+        loadUsers();
+    }
 });
 
 table.innerHTML += `
@@ -301,6 +346,6 @@ table.innerHTML += `
     <td class="users-table-cell">${u.assisted_signup ? '<span class="status-true">✔</span>' : '<span class="status-false">✖</span>'}</td>
 </tr>
 `;
-
+});
 </script>
 {% endblock %}

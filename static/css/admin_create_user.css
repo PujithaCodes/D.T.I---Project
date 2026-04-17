@@ -1,7 +1,7 @@
 /* ================= PAGE BACKGROUND ================= */
 
 .create-user-page{
-    background: linear-gradient(-45deg,#1d309b,#3d146d,#8d134c,#a7278b);
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     background-size: 400% 400%;
     animation: gradientMove 12s ease infinite;
 }
@@ -122,7 +122,8 @@ select.form-input{
 }
 
 select.form-input option{
-    color:black;
+    background-color:#333;
+    color:white;
 }
 
 

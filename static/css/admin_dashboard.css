@@ -73,7 +73,7 @@
 
 /* Primary Button */
 .dashboard-actions .btn-primary{
-    background:linear-gradient(135deg,#00f2fe,#4facfe);
+    background:linear-gradient(135deg,#3b58da,#4facfe);
     padding:12px 22px;
     border-radius:8px;
     text-decoration:none;

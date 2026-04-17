@@ -144,6 +144,7 @@
                     <tr>
                         <th>Title</th>
                         <th>Status</th>
+                        <th>Priority</th>
                         <th>Ward</th>
                         <th>City</th>
                         <th>State</th>
@@ -161,6 +162,11 @@
                             <td>
                                 <span class="status-badge status-{{ issue.status|replace(' ','-') }}">
                                     {{ issue.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="priority-badge priority-${(issue.priority_level || 'low').toLowerCase()}">
+                                    ${issue.priority_level || 'Low'}
                                 </span>
                             </td>
                             <td>{{ issue.ward_name or '-' }}</td>
@@ -341,9 +347,9 @@ if (ctx) {
         fetch(`/dashboard/issues/filter?${params.toString()}`)
             .then(r => r.json())
             .then(data => {
-
+                
                 if (data.warning) alert(data.warning);
-
+                
                 if (data.corrected_dates) {
                     if (data.corrected_dates.start_date)
                         startDateInput.value = data.corrected_dates.start_date;
@@ -351,11 +357,16 @@ if (ctx) {
                         endDateInput.value = data.corrected_dates.end_date;
                 }
 
+                if (data.issues && Array.isArray(data.issues)) {
+                    data.issues.sort((a, b) => (b.priority_score || 0) - (a.priority_score || 0));
+                }
+
                 tableBody.innerHTML = "";
 
-                if (!data.issues?.length) {
-                    tableBody.innerHTML = "<tr><td colspan='8'>No issues found.</td></tr>";
-                } else {
+                if (!data.issues || !data.issues.length) {
+                    tableBody.innerHTML = "<tr><td colspan='9'>No issues found.</td></tr>";
+                } 
+                else {
 
                     data.issues.forEach(issue => {
 
@@ -392,6 +403,13 @@ if (ctx) {
                                         ${issue.status}
                                     </span>
                                 </td>
+                                <td>
+                                    <span class="priority-badge priority-${String(issue.priority_level || 'low').toLowerCase()}">
+                                        ${issue.priority_level || 'Low'}
+                                    </span>
+
+                                </td>
+
                                 <td>${issue.ward_name || '-'}</td>
                                 <td>${issue.city_name || '-'}</td>
                                 <td>${issue.state_name || '-'}</td>
@@ -408,7 +426,10 @@ if (ctx) {
                 }
                 updateStatsCards(data.stats);
                 updateChart(data.stats);
-            });
+            }).catch(err => {
+                console.error("LOAD ISSUES ERROR:", err);
+                tableBody.innerHTML = "<tr><td colspan='9'>Error loading issues</td></tr>";
+            });        
     }
     let searchTimeout = null;
 

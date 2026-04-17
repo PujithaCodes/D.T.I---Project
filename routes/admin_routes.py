@@ -32,6 +32,7 @@ def filter_users():
     ui_city_id = request.args.get("city_id")
     ui_ward_id = request.args.get("ward_id")
     search = request.args.get("search")
+    assisted = request.args.get("assisted")
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -95,6 +96,10 @@ def filter_users():
         like = f"%{search}%"
         query += " AND (u.name LIKE %s OR u.mobile LIKE %s)"
         params.extend([like, like])
+    
+    if assisted in ["0", "1"]:
+        query += " AND u.assisted_signup = %s"
+        params.append(int(assisted))
 
     query += " ORDER BY u.created_at ASC"
 

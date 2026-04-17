@@ -129,8 +129,8 @@
     color:#ffffff;
 }
 
-.issue-detail-card textarea,
-.issue-detail-card select{
+.issue-detail-card textarea
+{
     width:100%;
     padding:8px;
     border-radius:6px;
@@ -177,4 +177,45 @@
 .issue-image-modal img{
     max-width:90%;
     max-height:90%;
+}
+
+.issue-detail-card select{
+    width:100%;
+    padding:12px;
+    border-radius:8px;
+    border:none;
+    background:rgba(255,255,255,0.2);
+    color:white;
+}
+
+.issue-detail-card select option{
+    background-color:#333;
+    color:white;
+}
+
+.priority-badge{
+    padding:4px 10px;
+    border-radius:6px;
+    font-size: medium;
+}
+
+.Low{
+    background:#3bfa41;
+    text-shadow: #021730 1px 1px 2px;
+    font-style: italic;
+}
+.Medium{
+    background:#facd39;
+    text-shadow: #021730 1px 1px 2px;
+    font-style: italic;
+}
+.High{
+    background:#f1aa3e;
+    text-shadow: #021730 1px 1px 2px;
+    font-style: italic;
+}
+.Critical{
+    background:#f75b4d;
+    text-shadow: #021730 1px 1px 2px;  
+    font-style: italic;
 }
